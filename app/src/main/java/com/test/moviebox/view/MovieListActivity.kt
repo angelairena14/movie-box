@@ -1,9 +1,8 @@
 package com.test.moviebox.view
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -19,16 +18,17 @@ import com.test.moviebox.utils.Constant.MovieFilterCategory.UPCOMING
 import com.test.moviebox.utils.Status
 import com.test.moviebox.view.adapter.MovieListAdapter
 import com.test.moviebox.view.dialog.CategoryBottomSheetFragment
-import com.test.moviebox.viewmodel.MovieListViewModel
-import com.test.moviebox.viewmodel.MovieListViewModelFactory
+import com.test.moviebox.viewmodel.MovieViewModel
+import com.test.moviebox.viewmodel.MovieViewModelFactory
+import kotlinx.android.synthetic.main.partial_main_toolbar.view.*
 
 
 class MovieListActivity : BaseActivity() {
     lateinit var binding: ActivityMovieListBinding
-    lateinit var retrofitViewModel: MovieListViewModel
+    lateinit var movieViewModel: MovieViewModel
+    lateinit var movieListAdapter: MovieListAdapter
     var page = 1
     var totalPage = 0
-    lateinit var movieListAdapter: MovieListAdapter
     var type =  ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +42,9 @@ class MovieListActivity : BaseActivity() {
 
     private fun setListener(){
         binding.let {
+            it.toolbar.iv_nav_favorite.setOnClickListener {
+                startActivity(Intent(this,FavoriteMovieListActivity::class.java))
+            }
             it.rvMovieList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(
                     recyclerView: RecyclerView,
@@ -57,7 +60,7 @@ class MovieListActivity : BaseActivity() {
                 }
             })
             it.btnCategory.setOnClickListener {
-                var dialog = CategoryBottomSheetFragment.newInstance(type)
+                val dialog = CategoryBottomSheetFragment.newInstance(type)
                 dialog.onClicked = { category ->
                     this.type = category
                     movieListAdapter.list.clear()
@@ -77,22 +80,22 @@ class MovieListActivity : BaseActivity() {
             it.rvMovieList.setItemViewCacheSize(20)
             movieListAdapter.setHasStableIds(true)
             movieListAdapter.onClicked = {id ->
-                showToast("$id")
+                startActivity(MovieDetailActivity.getStartIntent(this,id,false))
             }
             it.rvMovieList.adapter = movieListAdapter
         }
     }
 
     private fun initViewModel(){
-        val retrofitViewModelFactory = MovieListViewModelFactory()
-        retrofitViewModel = ViewModelProviders.of(this,retrofitViewModelFactory).get(
-            MovieListViewModel::class.java)
+        val movieViewModelFactory = MovieViewModelFactory()
+        movieViewModel = ViewModelProviders.of(this,movieViewModelFactory).get(
+            MovieViewModel::class.java)
     }
 
     private fun loadData() {
         when(type){
             POPULAR,"" -> {
-                retrofitViewModel.fetchPopularMovies(page).observe(this, Observer {
+                movieViewModel.fetchPopularMovies(page).observe(this, Observer {
                     it?.let { resource ->
                         when (resource.status) {
                             Status.SUCCESS -> {
@@ -106,7 +109,7 @@ class MovieListActivity : BaseActivity() {
                 })
             }
             UPCOMING -> {
-                retrofitViewModel.fetchUpComingMovie(page).observe(this, Observer {
+                movieViewModel.fetchUpComingMovie(page).observe(this, Observer {
                     it?.let { resource ->
                         when (resource.status) {
                             Status.SUCCESS -> {
@@ -120,7 +123,7 @@ class MovieListActivity : BaseActivity() {
                 })
             }
             TOP_RATED -> {
-                retrofitViewModel.fetchTopRatedMovie(page).observe(this, Observer {
+                movieViewModel.fetchTopRatedMovie(page).observe(this, Observer {
                     it?.let { resource ->
                         when (resource.status) {
                             Status.SUCCESS -> {
@@ -134,7 +137,7 @@ class MovieListActivity : BaseActivity() {
                 })
             }
             NOW_PLAYING -> {
-                retrofitViewModel.fetchNowPlayingMovie(page).observe(this, Observer {
+                movieViewModel.fetchNowPlayingMovie(page).observe(this, Observer {
                     it?.let { resource ->
                         when (resource.status) {
                             Status.SUCCESS -> {

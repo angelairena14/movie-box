@@ -7,7 +7,7 @@ import io.reactivex.disposables.Disposables
 import retrofit2.Retrofit
 import javax.inject.Inject
 
-class MovieListRepository {
+class MovieRepository {
     @Inject
     lateinit var retrofit : Retrofit
     var apiService : APIService
@@ -26,6 +26,8 @@ class MovieListRepository {
 
     suspend fun getNowPlayingMovie(page : Int) = apiService.getNowPlayingMovieList(BuildConfig.API_KEY,page)
 
+    suspend fun getMovieDetail(movieId : Int) = apiService.getMovieDetail(movieId,BuildConfig.API_KEY)
 
+    suspend fun getMovieReviews(movieId : Int) = apiService.getMovieReviews(movieId,BuildConfig.API_KEY)
 
 }

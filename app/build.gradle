@@ -33,11 +33,13 @@ android {
             buildConfigField 'String', 'API_KEY', secretProperties['API_KEY']
             buildConfigField 'String', 'ENDPOINT_URL', endpointProperties['ENDPOINT_URL']
             buildConfigField 'String', 'ENDPOINT_IMAGE_URL_w200', endpointProperties['ENDPOINT_IMAGE_URL_w200']
+            buildConfigField 'String', 'ENDPOINT_IMAGE_URL_w300', endpointProperties['ENDPOINT_IMAGE_URL_w300']
         }
         production {
             buildConfigField 'String', 'API_KEY', secretProperties['API_KEY']
             buildConfigField 'String', 'ENDPOINT_URL', endpointProperties['ENDPOINT_URL']
             buildConfigField 'String', 'ENDPOINT_IMAGE_URL_w200', endpointProperties['ENDPOINT_IMAGE_URL_w200']
+            buildConfigField 'String', 'ENDPOINT_IMAGE_URL_w300', endpointProperties['ENDPOINT_IMAGE_URL_w300']
         }
     }
 

@@ -3,16 +3,15 @@ package com.test.moviebox.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.moneymanager.utils.Resource
-import com.test.moviebox.repository.MovieListRepository
+import com.test.moviebox.repository.MovieRepository
 import kotlinx.coroutines.Dispatchers
 
-class MovieListViewModel (retrofitRepository: MovieListRepository) : ViewModel(){
-    private var retrofitRepository: MovieListRepository = retrofitRepository
+class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(){
 
     fun fetchPopularMovies(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = retrofitRepository.getPopularMovies(page)))
+            emit(Resource.success(data = movieRepository.getPopularMovies(page)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -21,7 +20,7 @@ class MovieListViewModel (retrofitRepository: MovieListRepository) : ViewModel()
     fun fetchUpComingMovie(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = retrofitRepository.getUpcomingMovie(page)))
+            emit(Resource.success(data = movieRepository.getUpcomingMovie(page)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -30,7 +29,7 @@ class MovieListViewModel (retrofitRepository: MovieListRepository) : ViewModel()
     fun fetchTopRatedMovie(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = retrofitRepository.getTopRatedMoview(page)))
+            emit(Resource.success(data = movieRepository.getTopRatedMoview(page)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -39,7 +38,25 @@ class MovieListViewModel (retrofitRepository: MovieListRepository) : ViewModel()
     fun fetchNowPlayingMovie(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = retrofitRepository.getNowPlayingMovie(page)))
+            emit(Resource.success(data = movieRepository.getNowPlayingMovie(page)))
+        } catch (exception: Exception) {
+            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+        }
+    }
+
+    fun fetchMovieDetail(movieId : Int) = liveData(Dispatchers.IO) {
+        emit(Resource.loading(data = null))
+        try {
+            emit(Resource.success(data = movieRepository.getMovieDetail(movieId)))
+        } catch (exception: Exception) {
+            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+        }
+    }
+
+    fun fetchMovieReview(movieId : Int) = liveData(Dispatchers.IO) {
+        emit(Resource.loading(data = null))
+        try {
+            emit(Resource.success(data = movieRepository.getMovieReviews(movieId)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }

@@ -3,7 +3,7 @@ package com.test.moviebox.di
 import com.test.moviebox.BaseApplication
 import com.example.moneymanager.utils.HeaderInterceptor
 import com.test.moviebox.BuildConfig
-import com.test.moviebox.repository.MovieListRepository
+import com.test.moviebox.repository.MovieRepository
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -55,7 +55,7 @@ class ApiModule constructor(baseUrl : String){
     }
 
     @Provides
-    fun provideMovieListRepository() : MovieListRepository {
-        return MovieListRepository()
+    fun provideMovieListRepository() : MovieRepository {
+        return MovieRepository()
     }
 }

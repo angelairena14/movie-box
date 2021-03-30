@@ -1,42 +1,46 @@
-package com.example.moneymanager.repository
+package com.test.moviebox.repository
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import com.example.moneymanager.room.LoginDatabase
-import com.test.moviebox.room.model.LoginTableModel
+import com.test.moviebox.room.MovieDatabase
+import com.test.moviebox.room.model.FavouriteMovieModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
 class RoomRepository {
     companion object {
-        var loginDatabase : LoginDatabase? = null
-        var loginTableModel : LiveData<List<LoginTableModel>>? = null
-        private fun initializeDB(context: Context) : LoginDatabase {
-            return LoginDatabase.getDatabaseClient(context)
+        var movieDatabase: MovieDatabase? = null
+        var movieTableModel: LiveData<List<FavouriteMovieModel>>? = null
+
+        private fun initializeDB(context: Context): MovieDatabase {
+            return MovieDatabase.getDatabaseClient(context)
         }
 
-        fun insertData(context: Context,username : String, password : String){
-            loginDatabase = initializeDB(context)
+        fun insertData(
+            context: Context,
+            item : FavouriteMovieModel
+        ) {
+            movieDatabase = initializeDB(context)
             CoroutineScope(IO).launch {
-                val loginDetails = LoginTableModel(username,password)
-                loginDatabase?.loginDao()?.insertData(loginDetails)
+                movieDatabase?.movieDao()?.insertData(item)
             }
         }
 
-        fun delete(context: Context,id: Int, username : String, password: String){
-            loginDatabase = initializeDB(context)
+        fun delete(
+            context: Context,
+            item : FavouriteMovieModel
+        ) {
+            movieDatabase = initializeDB(context)
             CoroutineScope(IO).launch {
-                val loginDetails = LoginTableModel(username,password)
-                loginDetails.id = id
-                loginDatabase?.loginDao()?.delete(loginDetails)
+                movieDatabase?.movieDao()?.delete(item)
             }
         }
 
-        fun getLoginDetails(context: Context) : LiveData<List<LoginTableModel>>? {
-            loginDatabase = initializeDB(context)
-            loginTableModel = loginDatabase?.loginDao()?.getLoginDetails()
-            return loginTableModel
+        fun getMovieDetail(context: Context): LiveData<List<FavouriteMovieModel>>? {
+            movieDatabase = initializeDB(context)
+            movieTableModel = movieDatabase?.movieDao()?.getMovieDetail()
+            return movieTableModel
         }
     }
 }
