@@ -30,6 +30,6 @@ class MovieRepository {
 
     suspend fun getMovieDetail(movieId : Int) = apiService.getMovieDetail(movieId,BuildConfig.API_KEY)
 
-    suspend fun getMovieReviews(movieId : Int) = apiService.getMovieReviews(movieId,BuildConfig.API_KEY)
+    suspend fun getMovieReviews(movieId : Int, page: Int) = apiService.getMovieReviews(movieId,page,BuildConfig.API_KEY)
 
 }

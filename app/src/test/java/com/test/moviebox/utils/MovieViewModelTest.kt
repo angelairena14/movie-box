@@ -68,7 +68,7 @@ class MovieViewModelTest {
             whenever(movieRepository.getTopRatedMoview(page)).thenReturn(movieList)
             whenever(movieRepository.getNowPlayingMovie(page)).thenReturn(movieList)
             whenever(movieRepository.getMovieDetail(movieId)).thenReturn(movieDetail)
-            whenever(movieRepository.getMovieReviews(movieId)).thenReturn(movieReview)
+            whenever(movieRepository.getMovieReviews(movieId,page)).thenReturn(movieReview)
         }
     }
 
@@ -126,7 +126,7 @@ class MovieViewModelTest {
 
     @Test
     fun `success load movie review`() = runBlocking {
-        viewModel.fetchMovieReview(movieId).observeForever(movieReviewObserver)
+        viewModel.fetchMovieReview(movieId,page).observeForever(movieReviewObserver)
         verify(movieReviewObserver, timeout(6000)).onChanged(Resource.loading(null))
         verify(movieReviewObserver, timeout(6000)).onChanged(successResourceMovieReview)
     }

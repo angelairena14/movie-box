@@ -43,7 +43,7 @@ class MovieRepositoryTest {
             whenever(movieApi.getTopRatedMovieList(BuildConfig.API_KEY, page)).thenReturn(movieList)
             whenever(movieApi.getNowPlayingMovieList(BuildConfig.API_KEY, page)).thenReturn(movieList)
             whenever(movieApi.getMovieDetail(movieId,BuildConfig.API_KEY)).thenReturn(movieDetail)
-            whenever(movieApi.getMovieReviews(movieId,BuildConfig.API_KEY)).thenReturn(movieReview)
+            whenever(movieApi.getMovieReviews(movieId,page,BuildConfig.API_KEY)).thenReturn(movieReview)
         }
         repository = MovieRepository()
     }
@@ -87,6 +87,6 @@ class MovieRepositoryTest {
     @Test
     fun `success get movie review`() =
         runBlocking {
-            assertTrue(repository.getMovieReviews(movieId) != null)
+            assertTrue(repository.getMovieReviews(movieId,page) != null)
         }
 }

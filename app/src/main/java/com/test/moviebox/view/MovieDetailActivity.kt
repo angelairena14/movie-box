@@ -132,7 +132,7 @@ class MovieDetailActivity : BaseActivity() {
                 }
             })
 
-            movieViewModel.fetchMovieReview(movieId).observe(this, Observer {
+            movieViewModel.fetchMovieReview(movieId,page).observe(this, Observer {
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {

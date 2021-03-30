@@ -32,5 +32,5 @@ interface APIService {
     suspend fun getMovieDetail(@Path("movie_id") id: Int, @Query("api_key") api_key: String): MovieListDetail
 
     @GET("/3/movie/{movie_id}/reviews")
-    suspend fun getMovieReviews(@Path("movie_id") id: Int, @Query("api_key") api_key: String): MovieReviewResponse
+    suspend fun getMovieReviews( @Path("movie_id") id: Int,@Query("page") page: Int, @Query("api_key") api_key: String): MovieReviewResponse
 }
