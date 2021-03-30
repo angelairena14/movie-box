@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <data/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_popular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Popular"
+            android:textSize="17sp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_upcoming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Upcoming"
+            android:textSize="17sp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_popular" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_top_rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Top Rated"
+            android:textSize="17sp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_upcoming" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_now_playing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Now Playing"
+            android:textSize="17sp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_top_rate" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
