@@ -2,6 +2,7 @@ package com.test.moviebox.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -94,7 +95,7 @@ class MovieListActivity : BaseActivity() {
 
     private fun loadData() {
         when(type){
-            POPULAR,"" -> {
+            POPULAR -> {
                 movieViewModel.fetchPopularMovies(page).observe(this, Observer {
                     it?.let { resource ->
                         when (resource.status) {
@@ -138,6 +139,20 @@ class MovieListActivity : BaseActivity() {
             }
             NOW_PLAYING -> {
                 movieViewModel.fetchNowPlayingMovie(page).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> {
+                                val response = it.data
+                                successLoadMovie(response)
+                            }
+                            Status.ERROR -> errorLoadMovie(it.message)
+                            Status.LOADING -> binding.loadingBarMovieList.visibility = View.VISIBLE
+                        }
+                    }
+                })
+            }
+            else -> {
+                movieViewModel.fetchMovieList(page).observe(this, Observer {
                     it?.let { resource ->
                         when (resource.status) {
                             Status.SUCCESS -> {

@@ -18,6 +18,8 @@ class MovieRepository {
         apiService = retrofit.create(APIService::class.java)
     }
 
+    suspend fun getMovieList(page : Int) = apiService.getMovieList(BuildConfig.API_KEY,page)
+
     suspend fun getPopularMovies(page : Int) = apiService.getPopularMovieList(BuildConfig.API_KEY,page)
 
     suspend fun getUpcomingMovie(page : Int) = apiService.getUpcomingMovieList(BuildConfig.API_KEY,page)

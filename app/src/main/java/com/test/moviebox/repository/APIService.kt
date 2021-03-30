@@ -8,6 +8,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface APIService {
+    @GET("/3/discover/movie")
+    suspend fun getMovieList(@Query("api_key") api_key: String,
+                                    @Query("page") page: Int): MovieListResponse
+
     @GET("/3/movie/popular")
     suspend fun getPopularMovieList(@Query("api_key") api_key: String,
                                     @Query("page") page: Int): MovieListResponse

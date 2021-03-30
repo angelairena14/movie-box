@@ -1,12 +1,25 @@
 package com.test.moviebox.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.moneymanager.utils.Resource
+import com.test.moviebox.model.MovieListResponse
 import com.test.moviebox.repository.MovieRepository
+import com.test.moviebox.utils.Resource
 import kotlinx.coroutines.Dispatchers
+import retrofit2.Response
 
 class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(){
+
+    fun fetchMovieList(page : Int) = liveData(Dispatchers.IO) {
+        emit(Resource.loading(data = null))
+        try {
+            emit(Resource.success(data = movieRepository.getMovieList(page)))
+        } catch (exception: Exception) {
+            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+        }
+    }
 
     fun fetchPopularMovies(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))

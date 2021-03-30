@@ -1,6 +1,4 @@
-package com.example.moneymanager.utils
-
-import com.test.moviebox.utils.Status
+package com.test.moviebox.utils
 
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
     companion object {
