@@ -42,5 +42,10 @@ class RoomRepository {
             movieTableModel = movieDatabase?.movieDao()?.getMovieDetail()
             return movieTableModel
         }
+
+        fun getSingleMovie(context: Context,movieId : Int): Int? {
+            movieDatabase = initializeDB(context)
+            return movieDatabase?.movieDao()?.getSingleMovieDetail(movieId)
+        }
     }
 }

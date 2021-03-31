@@ -1,7 +1,7 @@
 package com.test.moviebox.di
 
 import com.test.moviebox.BaseApplication
-import com.example.moneymanager.utils.HeaderInterceptor
+import com.test.moviebox.utils.HeaderInterceptor
 import com.test.moviebox.BuildConfig
 import com.test.moviebox.repository.MovieRepository
 import dagger.Module

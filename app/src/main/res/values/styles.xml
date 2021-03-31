@@ -23,4 +23,9 @@
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:textColor">@color/whitePrimary</item>
     </style>
+
+    <style name="CornerSizeFiftyPercent">
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

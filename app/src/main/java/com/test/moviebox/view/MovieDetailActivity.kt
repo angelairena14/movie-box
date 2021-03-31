@@ -2,7 +2,9 @@ package com.test.moviebox.view
 
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
@@ -11,12 +13,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.gson.Gson
 import com.test.moviebox.BuildConfig
 import com.test.moviebox.R
 import com.test.moviebox.base.BaseActivity
 import com.test.moviebox.databinding.ActivityMovieDetailBinding
 import com.test.moviebox.model.MovieListDetail
+import com.test.moviebox.model.MovieListResponse
 import com.test.moviebox.model.MovieReviewResponse
+import com.test.moviebox.room.MovieDatabase
 import com.test.moviebox.room.model.FavouriteMovieModel
 import com.test.moviebox.utils.Constant.IntentKey.IS_FAVOURITE
 import com.test.moviebox.utils.Constant.IntentKey.MOVIE_ID
@@ -72,6 +77,9 @@ class MovieDetailActivity : BaseActivity() {
         setupAdapter()
         loadData()
         setListener()
+        AsyncTask.execute {
+            if (getDataExists(movieId) == 1) setIsFavourite()
+        }
     }
 
     private fun setupAdapter(){
@@ -103,7 +111,7 @@ class MovieDetailActivity : BaseActivity() {
                     }
                 }
             })
-            it.ivFavorite.setOnClickListener {
+            it.ivFavorite.setOnClickListener { _ ->
                 roomViewModel.insertData(this, FavouriteMovieModel(
                     saveMovieId,
                     saveMovieTitle,
@@ -112,12 +120,24 @@ class MovieDetailActivity : BaseActivity() {
                     savePoster
                 ))
                 showToast("Added to favourite")
+                setIsFavourite()
             }
 
             it.tvSeePoster.setOnClickListener {
                 PosterPreviewDialog.newInstance(savePoster).show(supportFragmentManager,"PosterPreviewDialog")
             }
         }
+    }
+
+    private fun setIsFavourite(){
+        binding.let {
+            it.ivFavorite.isEnabled = false
+            it.ivFavorite.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_heart_red))
+        }
+    }
+
+    private fun getDataExists(movieId: Int) : Int?{
+        return roomViewModel.getMovieSingle(this,movieId)
     }
 
     private fun loadData(){

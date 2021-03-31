@@ -14,4 +14,7 @@ interface DAOAccess {
 
     @Query("SELECT * FROM fav_movies")
     fun getMovieDetail() : LiveData<List<FavouriteMovieModel>>
+
+    @Query("SELECT COUNT(*) FROM fav_movies WHERE movie_id=:movieId")
+    fun getSingleMovieDetail(movieId : Int) : Int
 }

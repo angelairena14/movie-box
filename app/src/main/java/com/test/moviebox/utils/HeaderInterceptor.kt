@@ -1,4 +1,4 @@
-package com.example.moneymanager.utils
+package com.test.moviebox.utils
 
 import android.content.Context
 import okhttp3.Interceptor

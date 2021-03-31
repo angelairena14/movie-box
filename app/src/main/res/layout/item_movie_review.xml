@@ -16,24 +16,15 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cv_avatar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="10dp"
-                app:cardCornerRadius="100dp"
-                app:cardPreventCornerOverlap="false"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/image_data"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/image_data"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.cardview.widget.CardView>
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/CornerSizeFiftyPercent" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/appCompatImageView"
@@ -41,8 +32,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/ic_star"
-                app:layout_constraintStart_toStartOf="@+id/cv_avatar"
-                app:layout_constraintTop_toBottomOf="@+id/cv_avatar" />
+                app:layout_constraintStart_toStartOf="@+id/image_data"
+                app:layout_constraintTop_toBottomOf="@+id/image_data" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -53,7 +44,7 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView"
-                app:layout_constraintEnd_toEndOf="@+id/cv_avatar"
+                app:layout_constraintEnd_toEndOf="@+id/image_data"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
                 app:layout_constraintTop_toTopOf="@+id/appCompatImageView" />
 
@@ -68,7 +59,7 @@
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cv_avatar"
+                app:layout_constraintStart_toEndOf="@+id/image_data"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -79,7 +70,7 @@
                 android:textColor="@color/greyPrimary"
                 android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cv_avatar"
+                app:layout_constraintStart_toEndOf="@+id/image_data"
                 app:layout_constraintTop_toBottomOf="@+id/tv_username" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -94,7 +85,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/cv_avatar"
+                app:layout_constraintStart_toEndOf="@+id/image_data"
                 app:layout_constraintTop_toBottomOf="@+id/tv_updated_at"
                 app:layout_constraintVertical_bias="0.24" />
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,4 +27,8 @@ class MovieRoomViewModel : ViewModel() {
         movieListLiveData = RoomRepository.getMovieDetail(context)
         return movieListLiveData
     }
+
+    fun getMovieSingle(context: Context,movieId : Int): Int? {
+        return RoomRepository.getSingleMovie(context,movieId)
+    }
 }
