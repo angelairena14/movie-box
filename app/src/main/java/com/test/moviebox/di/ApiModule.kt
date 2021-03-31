@@ -4,6 +4,7 @@ import com.test.moviebox.BaseApplication
 import com.test.moviebox.utils.HeaderInterceptor
 import com.test.moviebox.BuildConfig
 import com.test.moviebox.repository.MovieRepository
+import com.test.moviebox.repository.MovieRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -56,6 +57,6 @@ class ApiModule constructor(baseUrl : String){
 
     @Provides
     fun provideMovieListRepository() : MovieRepository {
-        return MovieRepository()
+        return MovieRepositoryImpl()
     }
 }

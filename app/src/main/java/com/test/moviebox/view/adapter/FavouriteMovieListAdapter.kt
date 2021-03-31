@@ -15,6 +15,7 @@ import com.test.moviebox.databinding.ItemMovieListBinding
 import com.test.moviebox.room.model.FavouriteMovieModel
 import com.test.moviebox.utils.formatDateStyle1
 import kotlinx.android.synthetic.main.item_movie_list.view.*
+import java.lang.Exception
 
 class FavouriteMovieListAdapter(var context: Context) : RecyclerView.Adapter<FavouriteMovieListAdapter.ViewHolder>(){
     var list = ArrayList<FavouriteMovieModel>()
@@ -57,7 +58,11 @@ class FavouriteMovieListAdapter(var context: Context) : RecyclerView.Adapter<Fav
         fun bind(data : FavouriteMovieModel){
             binding.btnDelete.visibility = View.VISIBLE
             binding.tvTitle.text = data.title
-            binding.tvReleaseDate.text = if (data.releaseDate.isNotEmpty()) formatDateStyle1(data.releaseDate) else "-"
+            try {
+                binding.tvReleaseDate.text = if (data.releaseDate.isNotEmpty()) formatDateStyle1(data.releaseDate) else "-"
+            } catch (e : Exception){
+                binding.tvReleaseDate.text = "-"
+            }
             binding.tvOverview.text = data.overview
             Glide.with(binding.root.context)
                 .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${data.posterPath}")

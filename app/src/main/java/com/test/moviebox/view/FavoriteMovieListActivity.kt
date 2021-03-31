@@ -1,20 +1,14 @@
 package com.test.moviebox.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.gson.Gson
 import com.test.moviebox.R
 import com.test.moviebox.base.BaseActivity
 import com.test.moviebox.databinding.ActivityFavoriteMovieListBinding
-import com.test.moviebox.databinding.ActivityMovieDetailBinding
-import com.test.moviebox.room.model.FavouriteMovieModel
 import com.test.moviebox.view.adapter.FavouriteMovieListAdapter
-import com.test.moviebox.view.adapter.MovieListAdapter
 import com.test.moviebox.viewmodel.MovieRoomViewModel
 import kotlinx.android.synthetic.main.partial_toolbar_with_back_icon.view.*
 
@@ -27,7 +21,7 @@ class FavoriteMovieListActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_favorite_movie_list)
         roomViewModel = ViewModelProviders.of(this).get(MovieRoomViewModel::class.java)
-        binding.toolbar.toolbar_title.text = "Favorite Movie"
+        binding.toolbar.toolbar_title.text = getString(R.string.favourite_movie)
         binding.toolbar.iv_arrow_back.setOnClickListener { finish() }
         setupAdapter()
         loadDataFromRoom()

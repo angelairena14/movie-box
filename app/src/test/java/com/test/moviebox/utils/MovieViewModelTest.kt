@@ -35,7 +35,9 @@ class MovieViewModelTest {
     lateinit var successResourceMovieDetail : Resource<MovieListDetail>
     lateinit var successResourceMovieReview : Resource<MovieReviewResponse>
     private var page = 1
-    var movieId = 791373
+    private var invalidPage = -1
+    private var movieId = 791373
+    private var invalidMovieId = -1
 
     @Rule
     @JvmField
@@ -61,15 +63,6 @@ class MovieViewModelTest {
         successResourcesMovieList = Resource.success(movieList)
         successResourceMovieDetail = Resource.success(movieDetail)
         successResourceMovieReview = Resource.success(movieReview)
-        runBlocking {
-            whenever(movieRepository.getMovieList(page)).thenReturn(movieList)
-            whenever(movieRepository.getPopularMovies(page)).thenReturn(movieList)
-            whenever(movieRepository.getUpcomingMovie(page)).thenReturn(movieList)
-            whenever(movieRepository.getTopRatedMoview(page)).thenReturn(movieList)
-            whenever(movieRepository.getNowPlayingMovie(page)).thenReturn(movieList)
-            whenever(movieRepository.getMovieDetail(movieId)).thenReturn(movieDetail)
-            whenever(movieRepository.getMovieReviews(movieId,page)).thenReturn(movieReview)
-        }
     }
 
 
@@ -84,50 +77,115 @@ class MovieViewModelTest {
 
     @Test
     fun `success load movie list`() = runBlocking {
+        whenever(movieRepository.getMovieList(page)).thenReturn(movieList)
         viewModel.fetchMovieList(page).observeForever(movieObserver)
-        verify(movieObserver, timeout(6000)).onChanged(Resource.loading(null))
-        verify(movieObserver, timeout(6000)).onChanged(successResourcesMovieList)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(successResourcesMovieList)
+    }
+
+    @Test
+    fun `failed load movie list`() = runBlocking {
+        whenever(movieRepository.getMovieList(-invalidPage)).thenAnswer { throw Exception("Error!") }
+        viewModel.fetchMovieList(-invalidPage).observeForever(movieObserver)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(Resource.error(null,"Error!"))
     }
 
     @Test
     fun `success load popular movie list`() = runBlocking {
+        whenever(movieRepository.getPopularMovies(page)).thenReturn(movieList)
         viewModel.fetchPopularMovies(page).observeForever(movieObserver)
-        verify(movieObserver, timeout(6000)).onChanged(Resource.loading(null))
-        verify(movieObserver, timeout(6000)).onChanged(successResourcesMovieList)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(successResourcesMovieList)
+    }
+
+    @Test
+    fun `failed load popular movie list`() = runBlocking {
+        whenever(movieRepository.getPopularMovies(-invalidPage)).thenAnswer { throw Exception("Error!") }
+        viewModel.fetchPopularMovies(-invalidPage).observeForever(movieObserver)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(Resource.error(null,"Error!"))
     }
 
     @Test
     fun `success load upcoming movie list`() = runBlocking {
+        whenever(movieRepository.getUpcomingMovie(page)).thenReturn(movieList)
         viewModel.fetchUpComingMovie(page).observeForever(movieObserver)
-        verify(movieObserver, timeout(6000)).onChanged(Resource.loading(null))
-        verify(movieObserver, timeout(6000)).onChanged(successResourcesMovieList)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(successResourcesMovieList)
+    }
+
+    @Test
+    fun `failed load upcoming movie list`() = runBlocking {
+        whenever(movieRepository.getUpcomingMovie(-invalidPage)).thenAnswer { throw Exception("Error!") }
+        viewModel.fetchUpComingMovie(-invalidPage).observeForever(movieObserver)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(Resource.error(null,"Error!"))
     }
 
     @Test
     fun `success load top rated movie list`() = runBlocking {
+        whenever(movieRepository.getTopRatedMovie(page)).thenReturn(movieList)
         viewModel.fetchTopRatedMovie(page).observeForever(movieObserver)
-        verify(movieObserver, timeout(6000)).onChanged(Resource.loading(null))
-        verify(movieObserver, timeout(6000)).onChanged(successResourcesMovieList)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(successResourcesMovieList)
     }
 
     @Test
+    fun `failed load top rated movie list`() = runBlocking {
+        whenever(movieRepository.getTopRatedMovie(-invalidPage)).thenAnswer { throw Exception("Error!") }
+        viewModel.fetchTopRatedMovie(-invalidPage).observeForever(movieObserver)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(Resource.error(null,"Error!"))
+    }
+
+
+    @Test
     fun `success load now playing movie list`() = runBlocking {
+        whenever(movieRepository.getNowPlayingMovie(page)).thenReturn(movieList)
         viewModel.fetchNowPlayingMovie(page).observeForever(movieObserver)
-        verify(movieObserver, timeout(6000)).onChanged(Resource.loading(null))
-        verify(movieObserver, timeout(6000)).onChanged(successResourcesMovieList)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(successResourcesMovieList)
+    }
+
+
+    @Test
+    fun `failed load now playing movie list`() = runBlocking {
+        whenever(movieRepository.getNowPlayingMovie(-invalidPage)).thenAnswer { throw Exception("Error!") }
+        viewModel.fetchNowPlayingMovie(-invalidPage).observeForever(movieObserver)
+        verify(movieObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieObserver, timeout(2000)).onChanged(Resource.error(null,"Error!"))
     }
 
     @Test
     fun `success load movie detail`() = runBlocking {
+        whenever(movieRepository.getMovieDetail(movieId)).thenReturn(movieDetail)
         viewModel.fetchMovieDetail(movieId).observeForever(movieDetailObserver)
-        verify(movieDetailObserver, timeout(6000)).onChanged(Resource.loading(null))
-        verify(movieDetailObserver, timeout(6000)).onChanged(successResourceMovieDetail)
+        verify(movieDetailObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieDetailObserver, timeout(2000)).onChanged(successResourceMovieDetail)
+    }
+
+    @Test
+    fun `failed load movie detail`() = runBlocking {
+        whenever(movieRepository.getMovieDetail(-invalidMovieId)).thenAnswer { throw Exception("Error!") }
+        viewModel.fetchMovieDetail(-invalidMovieId).observeForever(movieDetailObserver)
+        verify(movieDetailObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieDetailObserver, timeout(2000)).onChanged(Resource.error(null,"Error!"))
     }
 
     @Test
     fun `success load movie review`() = runBlocking {
+        whenever(movieRepository.getMovieReviews(movieId,page)).thenReturn(movieReview)
         viewModel.fetchMovieReview(movieId,page).observeForever(movieReviewObserver)
-        verify(movieReviewObserver, timeout(6000)).onChanged(Resource.loading(null))
-        verify(movieReviewObserver, timeout(6000)).onChanged(successResourceMovieReview)
+        verify(movieReviewObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieReviewObserver, timeout(2000)).onChanged(successResourceMovieReview)
+    }
+
+    @Test
+    fun `failed load movie review`() = runBlocking {
+        whenever(movieRepository.getMovieReviews(-invalidMovieId,invalidPage)).thenAnswer { throw Exception("Error!") }
+        viewModel.fetchMovieReview(-invalidMovieId,invalidPage).observeForever(movieReviewObserver)
+        verify(movieReviewObserver, timeout(1000)).onChanged(Resource.loading(null))
+        verify(movieReviewObserver, timeout(2000)).onChanged(Resource.error(null,"Error!"))
     }
 }

@@ -33,6 +33,7 @@ import com.test.moviebox.viewmodel.MovieRoomViewModel
 import com.test.moviebox.viewmodel.MovieViewModel
 import com.test.moviebox.viewmodel.MovieViewModelFactory
 import kotlinx.android.synthetic.main.partial_toolbar_with_back_icon.view.*
+import java.lang.Exception
 
 
 class MovieDetailActivity : BaseActivity() {
@@ -119,7 +120,7 @@ class MovieDetailActivity : BaseActivity() {
                     saveOverView,
                     savePoster
                 ))
-                showToast("Added to favourite")
+                showToast(getString(R.string.added_to_favourite))
                 setIsFavourite()
             }
 
@@ -182,11 +183,15 @@ class MovieDetailActivity : BaseActivity() {
             title = if (saveMovieTitle.length < charCount) saveMovieTitle
             else "${detail?.title?.substring(0,charCount)}..."
             bind.toolbarDetail.toolbar_title.text = title
-            bind.tvLabelOverview.text = "Overview"
+            bind.tvLabelOverview.text = getString(R.string.overview)
             bind.tvSeePoster.visibility = View.VISIBLE
-            bind.tvReleaseDate.text = if (detail?.release_date?.isNotEmpty() == true){
-                formatDateStyle1(detail?.release_date?:"")
-            } else "-"
+            try {
+                bind.tvReleaseDate.text = if (detail?.release_date?.isNotEmpty() == true){
+                    formatDateStyle1(detail.release_date ?:"")
+                } else "-"
+            } catch (e : Exception){
+                bind.tvReleaseDate.text = "-"
+            }
             Glide.with(context)
                 .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${savePoster}")
                 .placeholder(ContextCompat.getDrawable(context,R.drawable.img_not_available))
@@ -211,7 +216,7 @@ class MovieDetailActivity : BaseActivity() {
     }
 
     private fun setError(message : String?){
-        showToast(message?:"Something went wrong")
+        showToast(message?:getString(R.string.something_went_wrong))
         binding.loadingBarMovieDetail.visibility = View.GONE
     }
 }

@@ -49,7 +49,11 @@ class MovieListAdapter(var context: Context) : RecyclerView.Adapter<MovieListAda
     class ViewHolder(private val binding : ItemMovieListBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(data : MovieListDetail){
             binding.tvTitle.text = data.title
-            binding.tvReleaseDate.text = if (data.release_date.isNotEmpty()) formatDateStyle1(data.release_date) else "-"
+            try {
+                binding.tvReleaseDate.text = if (data.release_date.isNotEmpty()) formatDateStyle1(data.release_date) else "-"
+            } catch (e :Exception){
+                binding.tvReleaseDate.text = "-"
+            }
             binding.tvOverview.text = data.overview
             Glide.with(binding.root.context)
                 .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${data.poster_path}")

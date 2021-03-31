@@ -176,7 +176,7 @@ class MovieListActivity : BaseActivity() {
     }
 
     private fun errorLoadMovie(message : String?){
-        showToast(message?:"Something went wrong!")
+        showToast(message?:getString(R.string.something_went_wrong))
         binding.loadingBarMovieList.visibility = View.GONE
     }
 }

@@ -44,13 +44,17 @@ class MovieReviewListAdapter(var context: Context) : RecyclerView.Adapter<MovieR
     class ViewHolder(private val binding : ItemMovieReviewBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(data : ReviewResults){
             val date = if (data.updated_at.isNotEmpty()) data.updated_at.substring(0,9) else ""
-            if (date.isNotEmpty()){
-                try {
-                    binding.tvUpdatedAt.text = formatDateStyle1(date)
-                } catch (e : Exception){
-                    binding.tvUpdatedAt.text = "-"
-                }
-            } else binding.tvUpdatedAt.text = "-"
+            try {
+                if (date.isNotEmpty()){
+                    try {
+                        binding.tvUpdatedAt.text = formatDateStyle1(date)
+                    } catch (e : Exception){
+                        binding.tvUpdatedAt.text = "-"
+                    }
+                } else binding.tvUpdatedAt.text = "-"
+            } catch (e : Exception){
+                binding.tvUpdatedAt.text = "-"
+            }
             binding.setVariable(BR.reviewlist,data)
             binding.tvLabelRate.text = if (data.author_details.rating != null) "${data.author_details.rating}" else "-"
             Glide.with(binding.root.context)
