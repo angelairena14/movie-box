@@ -47,5 +47,5 @@ Preview Poster
 
 ## Sample<br/>
 App sample can be downloaded via this link ( Google Drive ) <br/>
-https://drive.google.com/file/d/1JEwGdyyh2S_Mlq_MzAfveLkYmvLyIAJI/view?usp=sharing
+https://drive.google.com/file/d/1cxh4WntnxflN5tW31P1jfVQX9CSBIsdm/view?usp=sharing
 
