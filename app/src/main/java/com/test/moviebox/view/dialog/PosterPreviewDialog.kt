@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.dialog_preview_poster.view.*
 
 class PosterPreviewDialog: DialogFragment() {
     companion object {
-        fun newInstance(url: String): PosterPreviewDialog {
+        fun newInstance(url: String?): PosterPreviewDialog {
             val fragment = PosterPreviewDialog()
             var bundle = Bundle()
             bundle.putString("url", url)
@@ -23,7 +23,7 @@ class PosterPreviewDialog: DialogFragment() {
             return fragment
         }
     }
-    var url = ""
+    var url : String? = null
     var isCanDismis = false
 
     override fun onStart() {
@@ -45,12 +45,14 @@ class PosterPreviewDialog: DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        url = arguments?.getString("url")?:""
-        Glide.with(requireContext())
-            .load("${BuildConfig.ENDPOINT_IMAGE_URL_w300}/${url}")
-            .placeholder(ContextCompat.getDrawable(requireContext(),R.drawable.img_not_available))
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .into(view.iv_poster)
+        url = arguments?.getString("url")
+        url?.let { url ->
+            Glide.with(requireContext())
+                .load("${BuildConfig.ENDPOINT_IMAGE_URL_w300}/$url")
+                .placeholder(ContextCompat.getDrawable(requireContext(),R.drawable.img_not_available_large))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(view.iv_poster)
+        }
         view.ic_close.setOnClickListener { if(isCanDismis) this.dismiss()}
     }
 

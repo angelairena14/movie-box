@@ -21,7 +21,7 @@ data class MovieListDetail(
     @SerializedName("overview")
     val overview: String,
     @SerializedName("poster_path")
-    val poster_path: String,
+    val poster_path: String?,
     @SerializedName("release_date")
     val release_date: String,
     @SerializedName("title")

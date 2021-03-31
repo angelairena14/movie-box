@@ -2,7 +2,6 @@ package com.test.moviebox.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -22,6 +21,8 @@ import com.test.moviebox.view.dialog.CategoryBottomSheetFragment
 import com.test.moviebox.viewmodel.MovieViewModel
 import com.test.moviebox.viewmodel.MovieViewModelFactory
 import kotlinx.android.synthetic.main.partial_main_toolbar.view.*
+import kotlin.math.abs
+import kotlin.math.sign
 
 
 class MovieListActivity : BaseActivity() {
@@ -60,6 +61,7 @@ class MovieListActivity : BaseActivity() {
                     }
                 }
             })
+
             it.btnCategory.setOnClickListener {
                 val dialog = CategoryBottomSheetFragment.newInstance(type)
                 dialog.onClicked = { category ->

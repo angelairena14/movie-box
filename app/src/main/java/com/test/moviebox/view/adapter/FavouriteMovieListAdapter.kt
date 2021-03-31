@@ -64,11 +64,13 @@ class FavouriteMovieListAdapter(var context: Context) : RecyclerView.Adapter<Fav
                 binding.tvReleaseDate.text = "-"
             }
             binding.tvOverview.text = data.overview
-            Glide.with(binding.root.context)
-                .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${data.posterPath}")
-                .placeholder(ContextCompat.getDrawable(binding.root.context, R.drawable.img_not_available))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(binding.imageData)
+            data.posterPath?.let { poster ->
+                Glide.with(binding.root.context)
+                    .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/$poster")
+                    .placeholder(ContextCompat.getDrawable(binding.root.context, R.drawable.img_not_available))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(binding.imageData)
+            }
             binding.executePendingBindings()
         }
     }

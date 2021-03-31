@@ -57,11 +57,13 @@ class MovieReviewListAdapter(var context: Context) : RecyclerView.Adapter<MovieR
             }
             binding.setVariable(BR.reviewlist,data)
             binding.tvLabelRate.text = if (data.author_details.rating != null) "${data.author_details.rating}" else "-"
-            Glide.with(binding.root.context)
-                .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${data.author_details.avatar_path}")
-                .placeholder(ContextCompat.getDrawable(binding.root.context, R.drawable.img_not_available))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(binding.imageData)
+            data.author_details.avatar_path?.let { avatar ->
+                Glide.with(binding.root.context)
+                    .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/$avatar")
+                    .placeholder(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_circle_grey))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(binding.imageData)
+            }
             binding.executePendingBindings()
         }
     }

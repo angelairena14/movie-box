@@ -6,12 +6,12 @@ import com.test.moviebox.repository.MovieRepository
 import com.test.moviebox.utils.Resource
 import kotlinx.coroutines.Dispatchers
 
-class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(){
+class MovieViewModel (private val movieRepository: MovieRepository) : ViewModel(){
 
     fun fetchMovieList(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            var response = movieRepository.getMovieList(page)
+            val response = movieRepository.getMovieList(page)
             emit(Resource.success(data = response))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
@@ -21,7 +21,8 @@ class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(
     fun fetchPopularMovies(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = movieRepository.getPopularMovies(page)))
+            val response = movieRepository.getPopularMovies(page)
+            emit(Resource.success(data = response))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -30,7 +31,8 @@ class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(
     fun fetchUpComingMovie(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = movieRepository.getUpcomingMovie(page)))
+            val response = movieRepository.getUpcomingMovie(page)
+            emit(Resource.success(data = response))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -39,7 +41,8 @@ class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(
     fun fetchTopRatedMovie(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = movieRepository.getTopRatedMovie(page)))
+            val response = movieRepository.getTopRatedMovie(page)
+            emit(Resource.success(data = response))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -48,7 +51,8 @@ class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(
     fun fetchNowPlayingMovie(page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = movieRepository.getNowPlayingMovie(page)))
+            val response = movieRepository.getNowPlayingMovie(page)
+            emit(Resource.success(data = response))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -57,7 +61,8 @@ class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(
     fun fetchMovieDetail(movieId : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = movieRepository.getMovieDetail(movieId)))
+            val response = movieRepository.getMovieDetail(movieId)
+            emit(Resource.success(data = response))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -66,7 +71,8 @@ class MovieViewModel (private var movieRepository: MovieRepository) : ViewModel(
     fun fetchMovieReview(movieId : Int, page : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = movieRepository.getMovieReviews(movieId,page)))
+            val response = movieRepository.getMovieReviews(movieId,page)
+            emit(Resource.success(data = response))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }

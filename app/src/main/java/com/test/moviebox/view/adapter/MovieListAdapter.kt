@@ -55,11 +55,13 @@ class MovieListAdapter(var context: Context) : RecyclerView.Adapter<MovieListAda
                 binding.tvReleaseDate.text = "-"
             }
             binding.tvOverview.text = data.overview
-            Glide.with(binding.root.context)
-                .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${data.poster_path}")
-                .placeholder(ContextCompat.getDrawable(binding.root.context,R.drawable.img_not_available))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(binding.imageData)
+            data.poster_path?.let { poster ->
+                Glide.with(binding.root.context)
+                    .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${poster}")
+                    .placeholder(ContextCompat.getDrawable(binding.root.context,R.drawable.img_not_available))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(binding.imageData)
+            }
             binding.executePendingBindings()
         }
     }

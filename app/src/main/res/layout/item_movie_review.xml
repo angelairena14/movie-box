@@ -22,6 +22,7 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
+                android:src="@drawable/ic_circle_grey"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/CornerSizeFiftyPercent" />

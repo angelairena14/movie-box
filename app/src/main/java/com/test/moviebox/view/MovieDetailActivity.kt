@@ -58,7 +58,7 @@ class MovieDetailActivity : BaseActivity() {
     private var saveMovieTitle = ""
     private var saveReleaseDate = ""
     private var saveOverView = ""
-    private var savePoster = ""
+    private var savePoster : String? = null
     private var page = 1
     private var totalPage = 1
     lateinit var movieReviewAdapter: MovieReviewListAdapter
@@ -192,12 +192,14 @@ class MovieDetailActivity : BaseActivity() {
             } catch (e : Exception){
                 bind.tvReleaseDate.text = "-"
             }
-            Glide.with(context)
-                .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${savePoster}")
-                .placeholder(ContextCompat.getDrawable(context,R.drawable.img_not_available))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(bind.imageData)
-
+            savePoster?.let { poster ->
+                Glide.with(context)
+                    .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${poster}")
+                    .placeholder(ContextCompat.getDrawable(context,R.drawable.img_not_available))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(bind.imageData)
+            }
+            bind.loadingBarMovieDetail.visibility = View.GONE
         }
     }
 
@@ -212,7 +214,6 @@ class MovieDetailActivity : BaseActivity() {
     private fun successLoadReview(response : MovieReviewResponse?){
         totalPage = response?.total_pages ?:0
         movieReviewAdapter.setAdapterList(response?.results?: emptyList())
-        binding.loadingBarMovieDetail.visibility = View.GONE
     }
 
     private fun setError(message : String?){

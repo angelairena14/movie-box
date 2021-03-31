@@ -16,5 +16,5 @@ data class FavouriteMovieModel (
     @ColumnInfo(name = "overview")
     var overview : String,
     @ColumnInfo(name = "poster_path")
-    var posterPath : String
+    var posterPath : String?
 )
