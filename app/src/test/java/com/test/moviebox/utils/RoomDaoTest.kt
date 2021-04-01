@@ -43,8 +43,8 @@ class RoomDaoTest {
         val movieItem = FavouriteMovieModel(12345, "Test", "2020-08-05", "test test","/lPsD10PP4rgUGiGR4CCXA6iY0QQ.jpg")
         dao.insertData(movieItem)
 
-        val allShoppingItems = dao.getMovieDetail().getOrAwaitValue()
-        Assert.assertTrue(allShoppingItems.contains(movieItem))
+        val movieListItem = dao.getMovieDetail().getOrAwaitValue()
+        Assert.assertTrue(movieListItem.contains(movieItem))
     }
 
 
@@ -54,7 +54,7 @@ class RoomDaoTest {
         dao.insertData(movieItem)
         dao.delete(movieItem)
 
-        val allShoppingItems = dao.getMovieDetail().getOrAwaitValue()
-        Assert.assertFalse(allShoppingItems.contains(movieItem))
+        val movieListItem = dao.getMovieDetail().getOrAwaitValue()
+        Assert.assertFalse(movieListItem.contains(movieItem))
     }
 }
