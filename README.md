@@ -49,3 +49,6 @@ Preview Poster
 App sample can be downloaded via this link ( Google Drive ) <br/>
 https://drive.google.com/file/d/1cxh4WntnxflN5tW31P1jfVQX9CSBIsdm/view?usp=sharing
 
+## Link on Google Play 
+https://play.google.com/store/apps/details?id=com.test.moviebox
+
