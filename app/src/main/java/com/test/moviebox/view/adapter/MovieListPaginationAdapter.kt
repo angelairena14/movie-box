@@ -8,9 +8,15 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.test.moviebox.BuildConfig
 import com.test.moviebox.R
 import com.test.moviebox.model.MovieListDetail
+import com.test.moviebox.utils.formatDateStyle1
 
 
 class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -18,10 +24,7 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
     val LOADING = 0
     val ITEM = 1
     var isLoadingAdded = false
-
-    fun setMovieList(list: ArrayList<MovieListDetail?>){
-        this.list = list
-    }
+    var onClicked: (id: Int) -> Unit = { _ -> }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
@@ -54,7 +57,6 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
         return if (position == list.size - 1 && isLoadingAdded) LOADING else ITEM
     }
 
-
     fun addLoadingFooter() {
         isLoadingAdded = true
         add(null)
@@ -73,23 +75,21 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
     }
 
     fun addAll(moveResults: List<MovieListDetail?>) {
-        for (result in moveResults) {
-            add(result)
-        }
+        this.list.addAll(moveResults)
+        notifyDataSetChanged()
     }
 
-    fun getItem(position : Int) : MovieListDetail? {
-        return list[position]
-    }
 
     class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val movieTitle: TextView = itemView.findViewById(R.id.tv_title)
+        val movieReleaseDate: TextView = itemView.findViewById(R.id.tv_release_date)
         val movieImage: AppCompatImageView = itemView.findViewById(R.id.image_data)
+        val movieDescription: TextView = itemView.findViewById(R.id.tv_overview)
     }
 
     class LoadingViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
-        val progressBar: ProgressBar = itemView.findViewById(R.id.loadmore_progress) as ProgressBar
+        val layoutProgressBar: ConstraintLayout = itemView.findViewById(R.id.layout_loading) as ConstraintLayout
 
     }
 
@@ -98,11 +98,26 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
         when (getItemViewType(position)) {
             ITEM -> {
                 val movieViewHolder = holder as MovieViewHolder
+                try {
+                    movieViewHolder.movieReleaseDate.text = if (movie?.release_date?.isNotEmpty() == true)
+                        formatDateStyle1(movie.release_date) else "-"
+                } catch (e :Exception){
+                    movieViewHolder.movieReleaseDate.text = "-"
+                }
                 movieViewHolder.movieTitle.text = movie?.title
+                movieViewHolder.movieDescription.text = movie?.overview
+                movie?.poster_path?.let {poster ->
+                    Glide.with(context)
+                        .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${poster}")
+                        .placeholder(ContextCompat.getDrawable(context,R.drawable.img_not_available))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .into(movieViewHolder.movieImage)
+                }
+                holder.itemView.setOnClickListener { onClicked(list[position]?.id?:0) }
             }
             LOADING -> {
                 val loadingViewHolder = holder as LoadingViewHolder
-                loadingViewHolder.progressBar.visibility = View.VISIBLE
+                loadingViewHolder.layoutProgressBar.visibility = View.VISIBLE
             }
         }
 

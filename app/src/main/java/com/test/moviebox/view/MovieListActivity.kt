@@ -1,9 +1,8 @@
 package com.test.moviebox.view
 
 import android.content.Intent
-import android.graphics.Movie
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -18,7 +17,6 @@ import com.test.moviebox.utils.Constant.MovieFilterCategory.POPULAR
 import com.test.moviebox.utils.Constant.MovieFilterCategory.TOP_RATED
 import com.test.moviebox.utils.Constant.MovieFilterCategory.UPCOMING
 import com.test.moviebox.utils.Status
-import com.test.moviebox.view.adapter.MovieListAdapter
 import com.test.moviebox.view.adapter.MovieListPaginationAdapter
 import com.test.moviebox.view.dialog.CategoryBottomSheetFragment
 import com.test.moviebox.viewmodel.MovieViewModel
@@ -29,43 +27,77 @@ import kotlinx.android.synthetic.main.partial_main_toolbar.view.*
 class MovieListActivity : BaseActivity() {
     lateinit var binding: ActivityMovieListBinding
     lateinit var movieViewModel: MovieViewModel
-    lateinit var movieListAdapter: MovieListAdapter
     lateinit var paginationAdapter: MovieListPaginationAdapter
-    var page = 1
-    var totalPage = 0
     var type =  ""
 
-    private var PAGE_START = 1
     private var isLoadingPage = false
     private var isLastPagePage = false
     private var TOTAL_PAGES = 5
-    private var currentPage = PAGE_START
+    private var currentPage = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_movie_list)
         setupAdapter()
         initViewModel()
-//        loadData()
         setListener()
         loadFirstPage()
     }
 
     private fun loadFirstPage() {
-        movieViewModel.fetchMovieList(currentPage).observe(this, Observer {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        val response = resource.data
-                        TOTAL_PAGES = resource.data?.total_pages?:0
-                        response?.results?.let { it1 -> paginationAdapter.addAll(it1) }
-                        if (currentPage <= TOTAL_PAGES) paginationAdapter.addLoadingFooter()
-                        else isLastPagePage = true
+        binding.loadingBarMovieList.visibility = View.VISIBLE
+        when(type){
+            POPULAR -> {
+                movieViewModel.fetchPopularMovies(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadMovieFirst(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
                     }
-                    else -> {}
-                }
+                })
             }
-        })
+            UPCOMING -> {
+                movieViewModel.fetchUpComingMovie(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadMovieFirst(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
+                    }
+                })
+            }
+            TOP_RATED -> {
+                movieViewModel.fetchTopRatedMovie(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadMovieFirst(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
+                    }
+                })
+            }
+            NOW_PLAYING -> {
+                movieViewModel.fetchNowPlayingMovie(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadMovieFirst(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
+                    }
+                })
+            }
+            else -> {
+                movieViewModel.fetchMovieList(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadMovieFirst(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
+                    }
+                })
+            }
+        }
     }
 
     private fun setListener(){
@@ -74,8 +106,9 @@ class MovieListActivity : BaseActivity() {
                 startActivity(Intent(this,FavoriteMovieListActivity::class.java))
             }
 
-            val linearLayoutManager = it.rvMovieList.layoutManager as LinearLayoutManager
-            it.rvMovieList.addOnScrollListener(object : PaginationScrollListener(linearLayoutManager){
+            val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            it.rvMovieList.layoutManager = layoutManager
+            it.rvMovieList.addOnScrollListener(object : PaginationScrollListener(layoutManager){
                 override fun loadMoreItems() {
                     isLoadingPage = true
                     currentPage += 1
@@ -89,46 +122,84 @@ class MovieListActivity : BaseActivity() {
             })
 
             it.btnCategory.setOnClickListener {
-//                val dialog = CategoryBottomSheetFragment.newInstance(type)
-//                dialog.onClicked = { category ->
-//                    this.type = category
-//                    movieListAdapter.list.clear()
-//                    page = 1
-//                    totalPage = 0
-//                    loadData()
-//                }
-//                dialog.show(supportFragmentManager,"CategoryBottomSheetFragment")
+                val dialog = CategoryBottomSheetFragment.newInstance(type)
+                dialog.onClicked = { category ->
+                    this.type = category
+                    paginationAdapter.list.clear()
+                    currentPage = 1
+                    TOTAL_PAGES = 0
+                    loadFirstPage()
+                    paginationAdapter.notifyDataSetChanged()
+                }
+                dialog.show(supportFragmentManager,"CategoryBottomSheetFragment")
             }
         }
     }
 
     private fun loadNextPage() {
-        movieViewModel.fetchMovieList(currentPage).observe(this, Observer {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        paginationAdapter.removeLoadingFooter();
-                        isLoadingPage = false
-                        val response = resource.data
-                        response?.results?.let { it1 -> paginationAdapter.addAll(it1) }
-
-                        if (currentPage != TOTAL_PAGES) paginationAdapter.addLoadingFooter()
-                        else isLastPagePage = true
-
+        when(type){
+            POPULAR -> {
+                movieViewModel.fetchPopularMovies(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadNextMovie(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
                     }
-                    else -> {}
-                }
+                })
             }
-        })
+            UPCOMING -> {
+                movieViewModel.fetchUpComingMovie(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadNextMovie(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
+                    }
+                })
+            }
+            TOP_RATED -> {
+                movieViewModel.fetchTopRatedMovie(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadNextMovie(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
+                    }
+                })
+            }
+            NOW_PLAYING -> {
+                movieViewModel.fetchNowPlayingMovie(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadNextMovie(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
+                    }
+                })
+            }
+            else -> {
+                movieViewModel.fetchMovieList(currentPage).observe(this, Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> successLoadNextMovie(resource.data)
+                            Status.ERROR -> errorLoadMovie(resource.message)
+                        }
+                    }
+                })
+            }
+        }
     }
 
     private fun setupAdapter(){
-        movieListAdapter = MovieListAdapter(this)
         paginationAdapter = MovieListPaginationAdapter(this)
         binding.let {
             it.rvMovieList.setHasFixedSize(true)
             it.rvMovieList.setItemViewCacheSize(20)
-            movieListAdapter.setHasStableIds(true)
+            paginationAdapter.setHasStableIds(true)
+            paginationAdapter.onClicked = {id ->
+                startActivity(MovieDetailActivity.getStartIntent(this,id,false))
+            }
             it.rvMovieList.adapter = paginationAdapter
         }
     }
@@ -139,86 +210,24 @@ class MovieListActivity : BaseActivity() {
             MovieViewModel::class.java)
     }
 
-    private fun loadData() {
-        when(type){
-            POPULAR -> {
-                movieViewModel.fetchPopularMovies(page).observe(this, Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            Status.SUCCESS -> {
-                                val response = it.data
-                                successLoadMovie(response)
-                            }
-                            Status.ERROR -> errorLoadMovie(it.message)
-                            Status.LOADING -> binding.loadingBarMovieList.visibility = View.VISIBLE
-                        }
-                    }
-                })
-            }
-            UPCOMING -> {
-                movieViewModel.fetchUpComingMovie(page).observe(this, Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            Status.SUCCESS -> {
-                                val response = it.data
-                                successLoadMovie(response)
-                            }
-                            Status.ERROR -> errorLoadMovie(it.message)
-                            Status.LOADING -> binding.loadingBarMovieList.visibility = View.VISIBLE
-                        }
-                    }
-                })
-            }
-            TOP_RATED -> {
-                movieViewModel.fetchTopRatedMovie(page).observe(this, Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            Status.SUCCESS -> {
-                                val response = it.data
-                                successLoadMovie(response)
-                            }
-                            Status.ERROR -> errorLoadMovie(it.message)
-                            Status.LOADING -> binding.loadingBarMovieList.visibility = View.VISIBLE
-                        }
-                    }
-                })
-            }
-            NOW_PLAYING -> {
-                movieViewModel.fetchNowPlayingMovie(page).observe(this, Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            Status.SUCCESS -> {
-                                val response = it.data
-                                successLoadMovie(response)
-                            }
-                            Status.ERROR -> errorLoadMovie(it.message)
-                            Status.LOADING -> binding.loadingBarMovieList.visibility = View.VISIBLE
-                        }
-                    }
-                })
-            }
-            else -> {
-                movieViewModel.fetchMovieList(page).observe(this, Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            Status.SUCCESS -> {
-                                val response = it.data
-                                successLoadMovie(response)
-                            }
-                            Status.ERROR -> errorLoadMovie(it.message)
-                            Status.LOADING -> binding.loadingBarMovieList.visibility = View.VISIBLE
-                        }
-                    }
-                })
-            }
-        }
+    private fun successLoadNextMovie(response: MovieListResponse?){
+        Handler().postDelayed({
+            paginationAdapter.removeLoadingFooter()
+            isLoadingPage = false
+            response?.results?.let { it1 -> paginationAdapter.addAll(it1) }
+
+            if (currentPage != TOTAL_PAGES) paginationAdapter.addLoadingFooter()
+            else isLastPagePage = true
+        },500)
     }
 
-    private fun successLoadMovie(response : MovieListResponse?){
-        totalPage = response?.total_pages ?:0
-        movieListAdapter.setAdapterList(response?.results?: emptyList())
-        binding.loadingBarMovieList.visibility = View.GONE
+    private fun successLoadMovieFirst(response : MovieListResponse?){
+        TOTAL_PAGES = response?.total_pages?:0
+        response?.results?.let { it1 -> paginationAdapter.addAll(it1) }
+        if (currentPage <= TOTAL_PAGES) paginationAdapter.addLoadingFooter()
+        else isLastPagePage = true
         binding.btnCategory.isEnabled = true
+        binding.loadingBarMovieList.visibility = View.GONE
     }
 
     private fun errorLoadMovie(message : String?){
