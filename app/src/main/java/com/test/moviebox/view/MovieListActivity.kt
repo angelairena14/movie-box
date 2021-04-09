@@ -16,6 +16,7 @@ import com.test.moviebox.utils.Constant.MovieFilterCategory.NOW_PLAYING
 import com.test.moviebox.utils.Constant.MovieFilterCategory.POPULAR
 import com.test.moviebox.utils.Constant.MovieFilterCategory.TOP_RATED
 import com.test.moviebox.utils.Constant.MovieFilterCategory.UPCOMING
+import com.test.moviebox.utils.PaginationScrollListener
 import com.test.moviebox.utils.Status
 import com.test.moviebox.view.adapter.MovieListPaginationAdapter
 import com.test.moviebox.view.dialog.CategoryBottomSheetFragment
@@ -234,4 +235,5 @@ class MovieListActivity : BaseActivity() {
         showToast(message?:getString(R.string.something_went_wrong))
         binding.loadingBarMovieList.visibility = View.GONE
     }
+
 }

@@ -12,15 +12,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.FavoriteMovieListActivity"></activity>
-        <activity android:name=".view.MovieDetailActivity" />
-        <activity android:name=".view.MovieListActivity">
+        <activity android:name=".view.SplsahScreenActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.FavoriteMovieListActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".view.MovieDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".view.MovieListActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
