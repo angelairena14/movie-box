@@ -179,7 +179,8 @@ class MovieDetailActivity : BaseActivity() {
             when (response) {
                 is NewResource.Success -> {
                     response.data?.let { picsResponse ->
-                        successLoadReview(picsResponse)
+                        if (picsResponse.total_results == 0) showEmptyReview()
+                        else successLoadReview(picsResponse)
                     }
                 }
 

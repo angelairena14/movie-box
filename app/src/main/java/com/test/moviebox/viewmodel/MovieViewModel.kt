@@ -23,17 +23,12 @@ class MovieViewModel (private val movieRepository: MovieRepository) : ViewModel(
     }
 
     fun loadData(id : Int, page : Int){
-        val time = measureTimeMillis {
-            viewModelScope.launch {
-                coroutineScope {
-                    val data1 = async {  getMovieDetails(id)}
-                    val data2 = async { getMovieReviews(id,page) }
-                    data1.await()
-                    data2.await()
-                }
-            }
+        viewModelScope.launch {
+            val data1 = async {  getMovieDetails(id)}
+            val data2 = async { getMovieReviews(id,page) }
+            data1.await()
+            data2.await()
         }
-        Log.i("my_time_is","Completed in $time ms")
     }
 
     fun getMovieDetailsObject(): LiveData<NewResource<MovieListDetail>> {
@@ -50,12 +45,14 @@ class MovieViewModel (private val movieRepository: MovieRepository) : ViewModel(
     }
 
     private suspend fun fetchMovieReviews(id : Int, page : Int) {
-        movieRating.postValue(NewResource.Loading())
-        try {
-            val response = movieRepository.getMovieReviews(id,page)
-            movieRating.postValue(NewResource.Success(response))
-        } catch (t: Throwable) {
-            movieRating.postValue(NewResource.Error(t.localizedMessage,null))
+        viewModelScope.launch(Dispatchers.IO){
+            movieRating.postValue(NewResource.Loading())
+            try {
+                val response = movieRepository.getMovieReviews(id,page)
+                movieRating.postValue(NewResource.Success(response))
+            } catch (t: Throwable) {
+                movieRating.postValue(NewResource.Error(t.localizedMessage,null))
+            }
         }
     }
 
