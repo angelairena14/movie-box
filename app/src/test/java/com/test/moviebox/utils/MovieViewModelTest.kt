@@ -2,10 +2,7 @@ package com.test.moviebox.utils
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.timeout
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.test.moviebox.model.MovieListDetail
 import com.test.moviebox.model.MovieListResponse
 import com.test.moviebox.model.MovieReviewResponse
@@ -27,12 +24,14 @@ class MovieViewModelTest {
     private lateinit var movieRepository: MovieRepository
     private lateinit var movieObserver: Observer<Resource<MovieListResponse>>
     private lateinit var movieDetailObserver: Observer<Resource<MovieListDetail>>
+    private lateinit var newMovieDetailObserver: Observer<NewResource<MovieListDetail>>
     private lateinit var movieReviewObserver: Observer<Resource<MovieReviewResponse>>
     lateinit var movieList : MovieListResponse
     lateinit var movieDetail : MovieListDetail
     lateinit var movieReview : MovieReviewResponse
     lateinit var successResourcesMovieList : Resource<MovieListResponse>
     lateinit var successResourceMovieDetail : Resource<MovieListDetail>
+    lateinit var successNewResourceMovieDetail : NewResource<MovieListDetail>
     lateinit var successResourceMovieReview : Resource<MovieReviewResponse>
     private var page = 1
     private var invalidPage = -1
@@ -42,6 +41,10 @@ class MovieViewModelTest {
     @Rule
     @JvmField
     val instantExecutorRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val testCoroutineRule = TestCoroutineRule()
+
 
     @ObsoleteCoroutinesApi
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
@@ -60,9 +63,13 @@ class MovieViewModelTest {
         movieObserver = mock()
         movieDetailObserver = mock()
         movieReviewObserver = mock()
+        newMovieDetailObserver = mock()
         successResourcesMovieList = Resource.success(movieList)
         successResourceMovieDetail = Resource.success(movieDetail)
         successResourceMovieReview = Resource.success(movieReview)
+        successNewResourceMovieDetail = NewResource.Success(
+            MovieListDetail(1,"","","","","")
+        )
     }
 
 
@@ -163,6 +170,14 @@ class MovieViewModelTest {
         viewModel.fetchMovieDetail(movieId).observeForever(movieDetailObserver)
         verify(movieDetailObserver, timeout(1000)).onChanged(Resource.loading(null))
         verify(movieDetailObserver, timeout(2000)).onChanged(successResourceMovieDetail)
+    }
+
+    @Test
+    fun `success load movie detail 2`() = runBlocking {
+        whenever(movieRepository.getMovieDetail(movieId)).thenReturn(movieDetail)
+        viewModel.getMovieDetails(movieId)
+        viewModel.getMovieDetailsObject().observeForever(newMovieDetailObserver)
+        verify(newMovieDetailObserver, timeout(1000)).onChanged(refEq(NewResource.Loading()))
     }
 
     @Test

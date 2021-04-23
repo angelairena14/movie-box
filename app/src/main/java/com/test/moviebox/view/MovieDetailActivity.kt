@@ -6,33 +6,36 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.gson.Gson
 import com.test.moviebox.BuildConfig
 import com.test.moviebox.R
 import com.test.moviebox.base.BaseActivity
 import com.test.moviebox.databinding.ActivityMovieDetailBinding
 import com.test.moviebox.model.MovieListDetail
-import com.test.moviebox.model.MovieListResponse
 import com.test.moviebox.model.MovieReviewResponse
-import com.test.moviebox.room.MovieDatabase
 import com.test.moviebox.room.model.FavouriteMovieModel
 import com.test.moviebox.utils.Constant.IntentKey.IS_FAVOURITE
 import com.test.moviebox.utils.Constant.IntentKey.MOVIE_ID
-import com.test.moviebox.utils.Status
+import com.test.moviebox.utils.NewResource
 import com.test.moviebox.utils.formatDateStyle1
 import com.test.moviebox.view.adapter.MovieReviewListAdapter
 import com.test.moviebox.view.dialog.PosterPreviewDialog
 import com.test.moviebox.viewmodel.MovieRoomViewModel
 import com.test.moviebox.viewmodel.MovieViewModel
 import com.test.moviebox.viewmodel.MovieViewModelFactory
+import kotlinx.android.synthetic.main.activity_movie_detail.*
 import kotlinx.android.synthetic.main.partial_toolbar_with_back_icon.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 
@@ -76,7 +79,7 @@ class MovieDetailActivity : BaseActivity() {
         }
         initViewModel()
         setupAdapter()
-        loadData()
+        loadFirstData()
         setListener()
         AsyncTask.execute {
             if (getDataExists(movieId) == 1) setIsFavourite()
@@ -107,7 +110,9 @@ class MovieDetailActivity : BaseActivity() {
                     if (!it.nestedScrollDetail.canScrollVertically(1)) {
                         if (page < totalPage) {
                             page++
-                            loadData()
+                            GlobalScope.launch(Dispatchers.Main){
+                                movieViewModel.getMovieReviews(movieId,page)
+                            }
                         }
                     }
                 }
@@ -141,34 +146,56 @@ class MovieDetailActivity : BaseActivity() {
         return roomViewModel.getMovieSingle(this,movieId)
     }
 
-    private fun loadData(){
+    private fun loadFirstData(){
         binding.let {bind ->
-            movieViewModel.fetchMovieDetail(movieId).observe(this, Observer {
-                it?.let { resource ->
-                    when (resource.status) {
-                        Status.SUCCESS -> { successLoadData (it.data)}
-                        Status.ERROR -> { setError(it.message) }
-                        Status.LOADING -> { bind.loadingBarMovieDetail.visibility = View.VISIBLE }
-                    }
-                }
-            })
-
-            movieViewModel.fetchMovieReview(movieId,page).observe(this, Observer {
-                it?.let { resource ->
-                    when (resource.status) {
-                        Status.SUCCESS -> {
-                            if (it.data?.total_results == 0) showEmptyReview()
-                            else successLoadReview(it.data)
-                        }
-                        Status.ERROR -> { setError(it.message) }
-                        Status.LOADING -> { bind.loadingBarMovieDetail.visibility = View.VISIBLE }
-                    }
-                }
-            })
+            movieViewModel.loadData(movieId,page)
+            loadMovieDetail()
+            loadMovieReview()
         }
     }
 
-    private fun successLoadData(detail: MovieListDetail?){
+    fun loadMovieDetail(){
+        movieViewModel.movieDetail.observe(this, Observer { response ->
+            when (response) {
+                is NewResource.Success -> {
+                    response.data?.let { picsResponse ->
+                        successLoadData(picsResponse)
+                    }
+                }
+
+                is NewResource.Error -> {
+                    Toast.makeText(this,response.message,Toast.LENGTH_SHORT).show()
+                }
+
+                is NewResource.Loading -> {
+                    binding.loadingBarMovieDetail.visibility = View.VISIBLE
+                }
+            }
+        })
+    }
+
+    fun loadMovieReview() {
+        movieViewModel.movieRating.observe(this, Observer { response ->
+            when (response) {
+                is NewResource.Success -> {
+                    response.data?.let { picsResponse ->
+                        successLoadReview(picsResponse)
+                    }
+                }
+
+                is NewResource.Error -> {
+                    Toast.makeText(this,response.message,Toast.LENGTH_SHORT).show()
+                }
+
+                is NewResource.Loading -> {
+                    binding.loadingBarMovieDetail.visibility = View.VISIBLE
+                }
+            }
+        })
+    }
+
+    fun successLoadData(detail: MovieListDetail?){
+        Log.i("data_is","called movie")
         val context = this@MovieDetailActivity
         var title = ""
         val charCount = 25
@@ -212,8 +239,10 @@ class MovieDetailActivity : BaseActivity() {
     }
 
     private fun successLoadReview(response : MovieReviewResponse?){
+        Log.i("data_is","called rating")
         totalPage = response?.total_pages ?:0
         movieReviewAdapter.setAdapterList(response?.results?: emptyList())
+        binding.loadingBarMovieDetail.visibility = View.GONE
     }
 
     private fun setError(message : String?){
