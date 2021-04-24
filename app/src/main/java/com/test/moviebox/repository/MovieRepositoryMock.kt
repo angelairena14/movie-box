@@ -4,6 +4,7 @@ import com.test.moviebox.BuildConfig
 import com.test.moviebox.model.MovieListDetail
 import com.test.moviebox.model.MovieListResponse
 import com.test.moviebox.model.MovieReviewResponse
+import retrofit2.Response
 
 class MovieRepositoryMock(val apiServiceMock : APIService) : MovieRepository(){
     override suspend fun getMovieList(page: Int) = apiServiceMock.getMovieList(BuildConfig.API_KEY,page)

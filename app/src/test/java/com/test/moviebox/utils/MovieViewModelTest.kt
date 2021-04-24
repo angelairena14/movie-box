@@ -168,13 +168,13 @@ class MovieViewModelTest {
         verify(movieDetailObserver, timeout(2000)).onChanged(successResourceMovieDetail)
     }
 
-    @Test
-    fun `success load movie detail 2`() = runBlocking {
-        whenever(movieRepository.getMovieDetail(movieId)).thenReturn(movieDetail)
-        viewModel.getMovieDetails(movieId)
-        viewModel.getMovieDetailsObject().observeForever(newMovieDetailObserver)
-        verify(newMovieDetailObserver, timeout(1000)).onChanged(refEq(NewResource.Loading()))
-    }
+//    @Test
+//    fun `success load movie detail 2`() = runBlocking {
+//        whenever(movieRepository.getMovieDetail(movieId)).thenReturn(movieDetail)
+//        viewModel.getMovieDetails(movieId)
+//        viewModel.getMovieDetailsObject().observeForever(newMovieDetailObserver)
+//        verify(newMovieDetailObserver, timeout(1000)).onChanged(refEq(NewResource.Loading()))
+//    }
 
     @Test
     fun `failed load movie detail`() = runBlocking {

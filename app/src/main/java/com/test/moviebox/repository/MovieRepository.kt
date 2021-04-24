@@ -3,6 +3,8 @@ package com.test.moviebox.repository
 import com.test.moviebox.model.MovieListDetail
 import com.test.moviebox.model.MovieListResponse
 import com.test.moviebox.model.MovieReviewResponse
+import kotlinx.coroutines.Deferred
+import retrofit2.Response
 
 abstract class MovieRepository {
     abstract suspend fun getMovieList(page: Int): MovieListResponse

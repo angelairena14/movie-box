@@ -3,6 +3,8 @@ package com.test.moviebox.repository
 import com.test.moviebox.model.MovieListResponse
 import com.test.moviebox.model.MovieListDetail
 import com.test.moviebox.model.MovieReviewResponse
+import kotlinx.coroutines.Deferred
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

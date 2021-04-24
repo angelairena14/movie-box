@@ -3,7 +3,10 @@ package com.test.moviebox.repository
 import com.test.moviebox.BaseApplication
 import com.test.moviebox.BuildConfig
 import com.test.moviebox.di.APIComponent
+import com.test.moviebox.model.MovieListDetail
 import com.test.moviebox.model.MovieListResponse
+import kotlinx.coroutines.Deferred
+import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
 

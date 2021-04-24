@@ -1,9 +1,13 @@
 package com.test.moviebox.utils
 
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.test.moviebox.model.ErrorResponseModel
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody
+import org.json.JSONObject
 
 class HeaderInterceptor (var context: Context?) : Interceptor {
 
@@ -17,6 +21,16 @@ class HeaderInterceptor (var context: Context?) : Interceptor {
         if (response.code == 200 || response.code == 201){
             response.body?.string()?.let { json ->
                 stringData = json
+            }
+        } else {
+            response.body?.apply {
+                val json_string = this.string()
+                val jsonObj = JSONObject(json_string)
+                val model = Gson().fromJson<ErrorResponseModel>(
+                    jsonObj.toString(),
+                    object : TypeToken<ErrorResponseModel>(){}.type
+                )
+               stringData = Gson().toJson(model)
             }
         }
         val contentType = response.body?.contentType()

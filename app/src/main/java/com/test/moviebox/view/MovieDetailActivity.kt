@@ -110,8 +110,8 @@ class MovieDetailActivity : BaseActivity() {
                     if (!it.nestedScrollDetail.canScrollVertically(1)) {
                         if (page < totalPage) {
                             page++
-                            GlobalScope.launch(Dispatchers.Main){
-                                movieViewModel.getMovieReviews(movieId,page)
+                            lifecycleScope.launch {
+                                movieViewModel.fetchMovieRatingDeffered(movieId,page)
                             }
                         }
                     }

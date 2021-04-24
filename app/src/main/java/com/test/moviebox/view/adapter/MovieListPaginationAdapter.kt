@@ -2,6 +2,7 @@ package com.test.moviebox.view.adapter
 
 import android.content.Context
 import android.graphics.Movie
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -95,6 +96,7 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val movie = list[position]
+        Log.i("called_is","called $position")
         when (getItemViewType(position)) {
             ITEM -> {
                 val movieViewHolder = holder as MovieViewHolder

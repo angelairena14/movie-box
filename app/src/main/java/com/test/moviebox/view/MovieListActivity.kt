@@ -4,9 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.test.moviebox.R
 import com.test.moviebox.base.BaseActivity
@@ -16,6 +18,7 @@ import com.test.moviebox.utils.Constant.MovieFilterCategory.NOW_PLAYING
 import com.test.moviebox.utils.Constant.MovieFilterCategory.POPULAR
 import com.test.moviebox.utils.Constant.MovieFilterCategory.TOP_RATED
 import com.test.moviebox.utils.Constant.MovieFilterCategory.UPCOMING
+import com.test.moviebox.utils.NewResource
 import com.test.moviebox.utils.PaginationScrollListener
 import com.test.moviebox.utils.Status
 import com.test.moviebox.view.adapter.MovieListPaginationAdapter
@@ -23,6 +26,7 @@ import com.test.moviebox.view.dialog.CategoryBottomSheetFragment
 import com.test.moviebox.viewmodel.MovieViewModel
 import com.test.moviebox.viewmodel.MovieViewModelFactory
 import kotlinx.android.synthetic.main.partial_main_toolbar.view.*
+import kotlinx.coroutines.launch
 
 
 class MovieListActivity : BaseActivity() {
@@ -89,11 +93,17 @@ class MovieListActivity : BaseActivity() {
                 })
             }
             else -> {
-                movieViewModel.fetchMovieList(currentPage).observe(this, Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            Status.SUCCESS -> successLoadMovieFirst(resource.data)
-                            Status.ERROR -> errorLoadMovie(resource.message)
+                lifecycleScope.launch { movieViewModel.fetchMovieListNew(currentPage) }
+                movieViewModel.movieList.observe(this, Observer { response ->
+                    when (response) {
+                        is NewResource.Success -> {
+                            response.data?.let { picsResponse ->
+                                successLoadMovieFirst(picsResponse)
+                            }
+                        }
+
+                        is NewResource.Error -> {
+                            Toast.makeText(this,response.message, Toast.LENGTH_SHORT).show()
                         }
                     }
                 })
@@ -180,11 +190,17 @@ class MovieListActivity : BaseActivity() {
                 })
             }
             else -> {
-                movieViewModel.fetchMovieList(currentPage).observe(this, Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            Status.SUCCESS -> successLoadNextMovie(resource.data)
-                            Status.ERROR -> errorLoadMovie(resource.message)
+                lifecycleScope.launch { movieViewModel.fetchMovieListNew(currentPage) }
+                movieViewModel.movieList.observe(this, Observer { response ->
+                    when (response) {
+                        is NewResource.Success -> {
+                            response.data?.let { picsResponse ->
+                                successLoadNextMovie(picsResponse)
+                            }
+                        }
+
+                        is NewResource.Error -> {
+                            Toast.makeText(this,response.message, Toast.LENGTH_SHORT).show()
                         }
                     }
                 })
@@ -196,7 +212,7 @@ class MovieListActivity : BaseActivity() {
         paginationAdapter = MovieListPaginationAdapter(this)
         binding.let {
             it.rvMovieList.setHasFixedSize(true)
-            it.rvMovieList.setItemViewCacheSize(20)
+            it.rvMovieList.setItemViewCacheSize(100)
             paginationAdapter.setHasStableIds(true)
             paginationAdapter.onClicked = {id ->
                 startActivity(MovieDetailActivity.getStartIntent(this,id,false))
@@ -219,7 +235,7 @@ class MovieListActivity : BaseActivity() {
 
             if (currentPage != TOTAL_PAGES) paginationAdapter.addLoadingFooter()
             else isLastPagePage = true
-        },500)
+        },700)
     }
 
     private fun successLoadMovieFirst(response : MovieListResponse?){
@@ -235,5 +251,4 @@ class MovieListActivity : BaseActivity() {
         showToast(message?:getString(R.string.something_went_wrong))
         binding.loadingBarMovieList.visibility = View.GONE
     }
-
 }
