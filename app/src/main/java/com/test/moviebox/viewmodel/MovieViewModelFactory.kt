@@ -11,8 +11,7 @@ class MovieViewModelFactory : ViewModelProvider.Factory {
     lateinit var movieRepository: MovieRepository
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        var apiComponent = BaseApplication().getMyComponent()
-        apiComponent.inject(this)
+        BaseApplication().getMyComponent().inject(this)
         if (modelClass.isAssignableFrom(MovieViewModel::class.java)){
             return MovieViewModel(movieRepository) as T
         }

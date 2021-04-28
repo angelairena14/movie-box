@@ -16,8 +16,7 @@ class MovieRepositoryImpl : MovieRepository(){
     var apiService : APIService
 
     init {
-        val apiComponent : APIComponent = BaseApplication().getMyComponent()
-        apiComponent.inject(this)
+        BaseApplication().getMyComponent().inject(this)
         apiService = retrofit.create(APIService::class.java)
     }
 

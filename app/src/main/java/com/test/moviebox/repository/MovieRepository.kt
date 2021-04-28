@@ -20,5 +20,4 @@ abstract class MovieRepository {
     abstract suspend fun getMovieDetail(movieId: Int): MovieListDetail
 
     abstract suspend fun getMovieReviews(movieId: Int, page: Int): MovieReviewResponse
-
 }

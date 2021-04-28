@@ -34,7 +34,6 @@ import com.test.moviebox.viewmodel.MovieViewModelFactory
 import kotlinx.android.synthetic.main.activity_movie_detail.*
 import kotlinx.android.synthetic.main.partial_toolbar_with_back_icon.view.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
 

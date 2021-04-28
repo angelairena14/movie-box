@@ -20,5 +20,4 @@ class MovieRepositoryMock(val apiServiceMock : APIService) : MovieRepository(){
     override suspend fun getMovieDetail(movieId: Int): MovieListDetail  = apiServiceMock.getMovieDetail(movieId,BuildConfig.API_KEY)
 
     override suspend fun getMovieReviews(movieId: Int, page: Int): MovieReviewResponse = apiServiceMock.getMovieReviews(movieId,page,BuildConfig.API_KEY)
-
 }

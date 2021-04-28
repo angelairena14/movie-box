@@ -96,7 +96,6 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val movie = list[position]
-        Log.i("called_is","called $position")
         when (getItemViewType(position)) {
             ITEM -> {
                 val movieViewHolder = holder as MovieViewHolder
