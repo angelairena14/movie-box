@@ -46,8 +46,7 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         viewModelScope.launch {
             movieDetail.postValue(NewResource.Loading())
             try {
-                val resultDef = getDeferredMovieDetail(id)
-                println("test_result $resultDef")
+                val resultDef = movieRepository.getMovieDetail(id)
                 movieDetail.postValue(NewResource.Success(resultDef))
             } catch (t: Throwable) {
                 movieDetail.postValue(NewResource.Error(t.localizedMessage, null))
@@ -55,7 +54,7 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         }
     }
 
-    suspend fun fetchMovieRatingDeffered(id: Int, page: Int) {
+    fun fetchMovieRatingDeffered(id: Int, page: Int) {
         viewModelScope.launch {
             movieRating.postValue(NewResource.Loading())
             try {
