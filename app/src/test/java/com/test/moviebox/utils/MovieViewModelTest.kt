@@ -171,9 +171,10 @@ class MovieViewModelTest {
 //    @Test
 //    fun `success load movie detail 2`() = runBlocking {
 //        whenever(movieRepository.getMovieDetail(movieId)).thenReturn(movieDetail)
-//        viewModel.getMovieDetails(movieId)
+//        viewModel.fetchMovieDetailsDeffered(movieId)
 //        viewModel.getMovieDetailsObject().observeForever(newMovieDetailObserver)
 //        verify(newMovieDetailObserver, timeout(1000)).onChanged(refEq(NewResource.Loading()))
+//        verify(newMovieDetailObserver, timeout(2000)).onChanged(successNewResourceMovieDetail)
 //    }
 
     @Test

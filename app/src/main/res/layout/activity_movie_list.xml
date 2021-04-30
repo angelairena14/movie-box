@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.MovieListActivity">
+
         <include
             android:id="@+id/toolbar"
-            layout="@layout/partial_main_toolbar"/>
+            layout="@layout/partial_main_toolbar" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_movie_list"
@@ -26,10 +28,10 @@
             style="@style/ButtonSolid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="false"
             android:layout_margin="8dp"
-            android:text="Category"
+            android:enabled="false"
             android:inputType="textCapCharacters"
+            android:text="Category"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,5 +47,15 @@
             app:layout_constraintStart_toStartOf="@+id/rv_movie_list"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="BACK TO TOP"
+            app:layout_constraintBottom_toBottomOf="@+id/rv_movie_list"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

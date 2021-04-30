@@ -28,6 +28,7 @@ import com.test.moviebox.view.adapter.MovieListPaginationAdapter
 import com.test.moviebox.view.dialog.CategoryBottomSheetFragment
 import com.test.moviebox.viewmodel.MovieViewModel
 import com.test.moviebox.viewmodel.MovieViewModelFactory
+import kotlinx.android.synthetic.main.activity_movie_list.*
 import kotlinx.android.synthetic.main.partial_main_toolbar.view.*
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -57,7 +58,6 @@ class MovieListActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         WorkManager.getInstance().cancelUniqueWork("movie-list")
-        Log.i("lifecyaaa","ondestroy called")
     }
 
     fun testWorker(){
@@ -152,6 +152,13 @@ class MovieListActivity : BaseActivity() {
                     currentPage += 1
                     loadNextPage()
                 }
+
+                override fun getDy(dy: Int) {
+                    Log.i("dy_is","$dy")
+                    if (dy > 0) btn_top.visibility = View.VISIBLE
+                    else btn_top.visibility = View.GONE
+                }
+
                 override val isLastPage: Boolean
                     get() = isLastPagePage
                 override val isLoading: Boolean
@@ -262,7 +269,7 @@ class MovieListActivity : BaseActivity() {
 
             if (currentPage != TOTAL_PAGES) paginationAdapter.addLoadingFooter()
             else isLastPagePage = true
-        },700)
+        },1000)
     }
 
     private fun successLoadMovieFirst(response : MovieListResponse?){

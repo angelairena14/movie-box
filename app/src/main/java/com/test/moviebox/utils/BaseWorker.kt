@@ -19,8 +19,8 @@ class BaseWorker(context: Context,workerParams: WorkerParameters) : CoroutineWor
         BaseApplication().initDaggerComponent().inject(this)
         return try {
             withContext(Dispatchers.IO){
-                val data = repository.getMovieList(1)
-                Log.i("called_is","datas ${data.total_pages}")
+//                val data = repository.getMovieList(1)
+                Log.i("called_is","datas abc")
                 Result.success()
             }
         } catch (e : Exception){

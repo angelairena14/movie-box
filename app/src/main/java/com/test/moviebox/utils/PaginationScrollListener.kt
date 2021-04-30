@@ -1,5 +1,6 @@
 package com.test.moviebox.utils
 
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -11,6 +12,7 @@ abstract class PaginationScrollListener(private val layoutManager: LinearLayoutM
         val visibleItemCount = layoutManager.childCount
         val totalItemCount = layoutManager.itemCount
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+        getDy(dy)
         if (!isLoading && !isLastPage) {
             if (visibleItemCount + firstVisibleItemPosition >= totalItemCount
                 && firstVisibleItemPosition >= 0
@@ -21,6 +23,7 @@ abstract class PaginationScrollListener(private val layoutManager: LinearLayoutM
     }
 
     protected abstract fun loadMoreItems()
+    protected abstract fun getDy(dy : Int)
     abstract val isLastPage: Boolean
     abstract val isLoading: Boolean
 

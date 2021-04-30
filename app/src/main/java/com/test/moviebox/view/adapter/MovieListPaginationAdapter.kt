@@ -1,16 +1,14 @@
 package com.test.moviebox.view.adapter
 
 import android.content.Context
-import android.graphics.Movie
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -20,12 +18,14 @@ import com.test.moviebox.model.MovieListDetail
 import com.test.moviebox.utils.formatDateStyle1
 
 
-class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class MovieListPaginationAdapter(var context: Context) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var list = ArrayList<MovieListDetail?>()
     val LOADING = 0
     val ITEM = 1
     var isLoadingAdded = false
     var onClicked: (id: Int) -> Unit = { _ -> }
+    var globalList = ArrayList<MovieListDetail?>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
@@ -72,14 +72,21 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
 
     fun add(movie: MovieListDetail?) {
         list.add(movie)
-        notifyItemInserted(list.size - 1)
+        notifyItemInserted(list.size)
     }
 
-    fun addAll(moveResults: List<MovieListDetail?>) {
+    fun addAll(moveResults: ArrayList<MovieListDetail?>) {
+        val oldList = moveResults
+        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(
+            MovieListDetailCallback(
+                oldList,
+                moveResults
+            )
+        )
         this.list.addAll(moveResults)
-        notifyDataSetChanged()
+        this.globalList.addAll(moveResults)
+        diffResult.dispatchUpdatesTo(this)
     }
-
 
     class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val movieTitle: TextView = itemView.findViewById(R.id.tv_title)
@@ -90,8 +97,31 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
 
     class LoadingViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
-        val layoutProgressBar: ConstraintLayout = itemView.findViewById(R.id.layout_loading) as ConstraintLayout
+        val layoutProgressBar: ConstraintLayout =
+            itemView.findViewById(R.id.layout_loading) as ConstraintLayout
 
+    }
+
+    class MovieListDetailCallback(
+        var oldMovieList: ArrayList<MovieListDetail?>,
+        var newMovieList: ArrayList<MovieListDetail?>
+    ) : DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return (oldMovieList[oldItemPosition]?.id == newMovieList[newItemPosition]?.id)
+        }
+
+        override fun getOldListSize(): Int {
+            return oldMovieList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newMovieList.size
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldMovieList[oldItemPosition]?.equals(newMovieList[newItemPosition])?:false
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -100,21 +130,27 @@ class MovieListPaginationAdapter(var context: Context) : RecyclerView.Adapter<Re
             ITEM -> {
                 val movieViewHolder = holder as MovieViewHolder
                 try {
-                    movieViewHolder.movieReleaseDate.text = if (movie?.release_date?.isNotEmpty() == true)
-                        formatDateStyle1(movie.release_date) else "-"
-                } catch (e :Exception){
+                    movieViewHolder.movieReleaseDate.text =
+                        if (movie?.release_date?.isNotEmpty() == true)
+                            formatDateStyle1(movie.release_date) else "-"
+                } catch (e: Exception) {
                     movieViewHolder.movieReleaseDate.text = "-"
                 }
                 movieViewHolder.movieTitle.text = movie?.title
                 movieViewHolder.movieDescription.text = movie?.overview
-                movie?.poster_path?.let {poster ->
+                movie?.poster_path?.let { poster ->
                     Glide.with(context)
                         .load("${BuildConfig.ENDPOINT_IMAGE_URL_w200}/${poster}")
-                        .placeholder(ContextCompat.getDrawable(context,R.drawable.img_not_available))
+                        .placeholder(
+                            ContextCompat.getDrawable(
+                                context,
+                                R.drawable.img_not_available
+                            )
+                        )
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(movieViewHolder.movieImage)
                 }
-                holder.itemView.setOnClickListener { onClicked(list[position]?.id?:0) }
+                holder.itemView.setOnClickListener { onClicked(list[position]?.id ?: 0) }
             }
             LOADING -> {
                 val loadingViewHolder = holder as LoadingViewHolder
