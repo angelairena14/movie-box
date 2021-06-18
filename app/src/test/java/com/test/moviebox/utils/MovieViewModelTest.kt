@@ -15,11 +15,17 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
 class MovieViewModelTest {
+    @get:Rule
+    val testInstantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
+    @get:Rule
+    val testCoRoutineRule = TestCoroutineRule()
+
     private lateinit var viewModel: MovieViewModel
     private lateinit var movieRepository: MovieRepository
     private lateinit var movieObserver: Observer<Resource<MovieListResponse>>
@@ -63,9 +69,7 @@ class MovieViewModelTest {
         successResourcesMovieList = Resource.success(movieList)
         successResourceMovieDetail = Resource.success(movieDetail)
         successResourceMovieReview = Resource.success(movieReview)
-        successNewResourceMovieDetail = NewResource.Success(
-            MovieListDetail(1,"","","","","")
-        )
+        successNewResourceMovieDetail = NewResource.Success(movieDetail)
     }
 
 
@@ -168,14 +172,32 @@ class MovieViewModelTest {
         verify(movieDetailObserver, timeout(2000)).onChanged(successResourceMovieDetail)
     }
 
-//    @Test
-//    fun `success load movie detail 2`() = runBlocking {
-//        whenever(movieRepository.getMovieDetail(movieId)).thenReturn(movieDetail)
-//        viewModel.fetchMovieDetailsDeffered(movieId)
-//        viewModel.getMovieDetailsObject().observeForever(newMovieDetailObserver)
-//        verify(newMovieDetailObserver, timeout(1000)).onChanged(refEq(NewResource.Loading()))
-//        verify(newMovieDetailObserver, timeout(2000)).onChanged(successNewResourceMovieDetail)
-//    }
+    @Test
+    fun `test success`() {
+        testCoRoutineRule.runBlockingTest {
+            whenever(movieRepository.getMovieDetail(0)).thenReturn(movieDetail)
+
+            viewModel.fetchMovieDetailsDeffered(0)
+            viewModel.getMovieDetailsObject().observeForever(newMovieDetailObserver)
+            verify(movieRepository).getMovieDetail(0)
+            verify(newMovieDetailObserver).onChanged(refEq(successNewResourceMovieDetail))
+            viewModel.getMovieDetailsObject().removeObserver(newMovieDetailObserver)
+        }
+    }
+
+    @Test
+    fun `test failed`() {
+        testCoRoutineRule.runBlockingTest {
+            val mockException = Exception("Error!")
+            whenever(movieRepository.getMovieDetail(0)).thenAnswer { throw mockException }
+
+            viewModel.fetchMovieDetailsDeffered(0)
+            viewModel.getMovieDetailsObject().observeForever(newMovieDetailObserver)
+            verify(movieRepository).getMovieDetail(0)
+            verify(newMovieDetailObserver).onChanged(refEq(NewResource.Error(mockException.localizedMessage)))
+            viewModel.getMovieDetailsObject().removeObserver(newMovieDetailObserver)
+        }
+    }
 
     @Test
     fun `failed load movie detail`() = runBlocking {
