@@ -53,6 +53,7 @@ class MovieListActivity : BaseActivity() {
         setListener()
         loadFirstPage()
         testWorker()
+        Toast.makeText(this,intent.getStringExtra("passing_value"),Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
@@ -72,8 +73,7 @@ class MovieListActivity : BaseActivity() {
             .setConstraints(constraints)
             .addTag("movie-list")
             .build()
-        WorkManager.getInstance()
-            .enqueueUniquePeriodicWork("movie-list", ExistingPeriodicWorkPolicy.KEEP, myWork)
+        WorkManager.getInstance().enqueueUniquePeriodicWork("movie-list", ExistingPeriodicWorkPolicy.KEEP, myWork)
     }
 
     private fun loadFirstPage() {

@@ -11,22 +11,32 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-        <activity android:name=".view.SplsahScreenActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".view.FavoriteMovieListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".view.MovieDetailActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".view.MovieListActivity"
-            android:screenOrientation="portrait">
+        <activity android:name=".view.WebViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name=".view.SplsahScreenActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".view.FavoriteMovieListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.MovieDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.MovieListActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
