@@ -1,6 +1,7 @@
 package com.test.moviebox.view.adapter
 
 import android.content.Context
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,7 @@ class MovieListPaginationAdapter(var context: Context) :
     val ITEM = 1
     var isLoadingAdded = false
     var onClicked: (id: Int) -> Unit = { _ -> }
-    var globalList = ArrayList<MovieListDetail?>()
+    var onListened : (pos : Int) -> Unit = {_ -> }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
@@ -75,16 +76,16 @@ class MovieListPaginationAdapter(var context: Context) :
         notifyItemInserted(list.size)
     }
 
-    fun addAll(moveResults: ArrayList<MovieListDetail?>) {
-        val oldList = moveResults
+
+    fun addAll(movieResult: ArrayList<MovieListDetail?>) {
+        val oldList = movieResult
         val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(
             MovieListDetailCallback(
                 oldList,
-                moveResults
+                movieResult
             )
         )
-        this.list.addAll(moveResults)
-        this.globalList.addAll(moveResults)
+        this.list.addAll(movieResult)
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -128,6 +129,9 @@ class MovieListPaginationAdapter(var context: Context) :
         val movie = list[position]
         when (getItemViewType(position)) {
             ITEM -> {
+                Handler().postDelayed({
+                    onListened(holder.adapterPosition)
+                },1200)
                 val movieViewHolder = holder as MovieViewHolder
                 try {
                     movieViewHolder.movieReleaseDate.text =

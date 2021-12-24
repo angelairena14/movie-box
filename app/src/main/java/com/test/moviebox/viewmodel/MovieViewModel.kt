@@ -1,6 +1,8 @@
 package com.test.moviebox.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
+import com.google.gson.Gson
 import com.test.moviebox.model.MovieListDetail
 import com.test.moviebox.model.MovieListResponse
 import com.test.moviebox.model.MovieReviewResponse
@@ -8,6 +10,7 @@ import com.test.moviebox.repository.MovieRepository
 import com.test.moviebox.utils.NewResource
 import com.test.moviebox.utils.Resource
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
 
 
 class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel() {
@@ -15,25 +18,35 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
     val movieRating: MutableLiveData<NewResource<MovieReviewResponse>> = MutableLiveData()
     val movieList: MutableLiveData<NewResource<MovieListResponse>> = MutableLiveData()
 
-    suspend fun getDeferredMovieDetail(id: Int) = withContext(Dispatchers.IO) {
-        movieRepository.getMovieDetail(id)
-    }
-
-    suspend fun getDeferredMovieRating(id: Int, page: Int) = withContext(Dispatchers.IO) {
-        movieRepository.getMovieReviews(id, page)
-    }
-
-    suspend fun getDeferredMovieList(page: Int) = withContext(Dispatchers.IO) {
-        movieRepository.getMovieList(page)
-    }
-
     fun loadData(id: Int, page: Int) {
         viewModelScope.launch {
-            coroutineScope {
-                val data1 = async { fetchMovieDetailsDeffered(id) }
-                val data2 = async { fetchMovieRatingDeffered(id, page) }
-                data1.await()
-                data2.await()
+//            testAsyncAwait(id,page)
+            launch { fetchMovieDetailsDeffered(id) }
+            launch { fetchMovieRatingDeffered(id, page) }
+        }
+    }
+
+    suspend fun testAsyncAwait(id: Int, page: Int){
+        viewModelScope.launch(IO){
+            val data1 = async {
+                try {
+                   movieRepository.getMovieDetail(id)
+                } catch (t: Throwable) {
+                    null
+                }
+            }
+            val data2 = async {
+                try {
+                   movieRepository.getMovieReviews(id, page)
+                } catch (t: Throwable) {
+                    null
+                }
+            }
+            val resultDetail = data1.await()
+            val resultReview = data2.await()
+            if (resultDetail != null && resultReview != null){
+                Log.i("result_is","movie_detail ${resultDetail.overview}")
+                Log.i("result_is","movie_rating ${resultReview.total_pages}")
             }
         }
     }
@@ -42,8 +55,9 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         return movieDetail
     }
 
+    // SHOULD BE LIKE THIS TO MAKE UNIT TEST
     suspend fun fetchMovieDetailsDeffered(id: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(IO) {
             movieDetail.postValue(NewResource.Loading())
             try {
                 val resultDef = movieRepository.getMovieDetail(id)
@@ -54,11 +68,12 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         }
     }
 
-    fun fetchMovieRatingDeffered(id: Int, page: Int) {
-        viewModelScope.launch {
+    suspend fun fetchMovieRatingDeffered(id: Int, page: Int) {
+        viewModelScope.launch(IO) {
+            Log.i("thread_is","movie rating ${Thread.currentThread().name}")
             movieRating.postValue(NewResource.Loading())
             try {
-                val resultDef = getDeferredMovieRating(id, page)
+                val resultDef = movieRepository.getMovieReviews(id, page)
                 movieRating.postValue(NewResource.Success(resultDef))
             } catch (t: Throwable) {
                 movieRating.postValue(NewResource.Error(t.localizedMessage, null))
@@ -66,17 +81,20 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         }
     }
 
+    // --------------------------------------------------------------------
     suspend fun fetchMovieListNew(page: Int) {
         viewModelScope.launch {
             movieList.postValue(NewResource.Loading())
             try {
-                val resultDef = getDeferredMovieList(page)
+                val resultDef = movieRepository.getMovieList(page)
                 movieList.postValue(NewResource.Success(resultDef))
             } catch (t: Throwable) {
                 movieList.postValue(NewResource.Error(t.localizedMessage, null))
             }
         }
     }
+
+    // OLD CODE
 
     fun fetchMovieList(page: Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))

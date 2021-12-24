@@ -172,6 +172,7 @@ class MovieViewModelTest {
         verify(movieDetailObserver, timeout(2000)).onChanged(successResourceMovieDetail)
     }
 
+    // FIXING UNIT TEST
     @Test
     fun `test success`() {
         testCoRoutineRule.runBlockingTest {

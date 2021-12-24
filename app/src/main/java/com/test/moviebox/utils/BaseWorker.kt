@@ -3,9 +3,7 @@ package com.test.moviebox.utils
 import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.google.gson.Gson
 import com.test.moviebox.BaseApplication
 import com.test.moviebox.repository.MovieRepository
 import kotlinx.coroutines.Dispatchers

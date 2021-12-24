@@ -6,7 +6,9 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -30,7 +32,8 @@ import com.test.moviebox.viewmodel.MovieViewModel
 import com.test.moviebox.viewmodel.MovieViewModelFactory
 import kotlinx.android.synthetic.main.activity_movie_list.*
 import kotlinx.android.synthetic.main.partial_main_toolbar.view.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
 import java.util.concurrent.TimeUnit
 
 
@@ -44,10 +47,17 @@ class MovieListActivity : BaseActivity() {
     private var isLastPagePage = false
     private var TOTAL_PAGES = 5
     private var currentPage = 1
+    private var intLiveData :  MutableLiveData<Int> = MutableLiveData()
+    private var totalItem = 10
+    lateinit var layoutManager : LinearLayoutManager
+    var indexPos = 0
+    var value = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_movie_list)
+//        runBlocking { testCoroutine() }
+        test1()
         setupAdapter()
         initViewModel()
         setListener()
@@ -55,6 +65,70 @@ class MovieListActivity : BaseActivity() {
         testWorker()
         Toast.makeText(this,intent.getStringExtra("passing_value"),Toast.LENGTH_SHORT).show()
     }
+
+    private fun test1() {
+        var a = 1
+        val b = 2
+
+        a = a.run { this + 2 }.let {
+            val i = it + b
+            i
+        }
+        println(a)
+
+        val word = "Hello Kotlin"
+        word.run { println("$this!!") }
+        Throwable("hi")
+        println(word)
+        val wordLength = word.let { "$it function".length }
+        println("wordLength is $wordLength")
+    }
+    var coroutineScope = CoroutineScope(IO)
+    suspend fun testCoroutine() {
+//        val result1 = CoroutineScope(IO).async { function1() }
+//        val result2 = CoroutineScope(IO).async{ function2() }
+//        CoroutineScope(IO).launch {
+//
+//        }
+//        Log.i("combined",result1.await() + " " + result2.await())
+        coroutineScope.launch {
+            val user = withContext(IO){
+
+            }
+        }
+        coroutineScope.cancel()
+    }
+
+    fun test123(){
+        val pairList = ArrayList<Pair<Int,Int>>()
+        val arrA = intArrayOf(100, 200, 100)
+        val arrB = intArrayOf(50, 100, 100)
+        for (i in 0 until arrA.size) {
+            pairList.add(Pair(arrA[i], arrB[i]))
+        }
+        val x = 200
+        val y = 60
+        var index = -1
+        for (i in pairList.indices) {
+            if ((x >= pairList[i].first && x <= pairList[i].first + 20 ) &&
+                (y >= pairList[i].second &&  y <= pairList[i].second +20)) index = i
+            
+        }
+    }
+
+    suspend fun function1() : String {
+        delay(1000L);
+        Log.i("result_is_1","function 1")
+        return "function 1";
+    }
+
+    suspend fun function2() : String {
+        delay(100L);
+        Log.i("result_is_1","function 2")
+        return "function 2";
+    }
+
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -144,7 +218,7 @@ class MovieListActivity : BaseActivity() {
                 startActivity(Intent(this,FavoriteMovieListActivity::class.java))
             }
 
-            val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             it.rvMovieList.layoutManager = layoutManager
             it.rvMovieList.addOnScrollListener(object : PaginationScrollListener(layoutManager){
                 override fun loadMoreItems() {
@@ -154,9 +228,7 @@ class MovieListActivity : BaseActivity() {
                 }
 
                 override fun getDy(dy: Int) {
-                    Log.i("dy_is","$dy")
-                    if (dy > 0) btn_top.visibility = View.VISIBLE
-                    else btn_top.visibility = View.GONE
+
                 }
 
                 override val isLastPage: Boolean
@@ -174,7 +246,6 @@ class MovieListActivity : BaseActivity() {
                     currentPage = 1
                     TOTAL_PAGES = 0
                     loadFirstPage()
-                    paginationAdapter.notifyDataSetChanged()
                 }
                 dialog.show(supportFragmentManager,"CategoryBottomSheetFragment")
             }
@@ -182,6 +253,7 @@ class MovieListActivity : BaseActivity() {
     }
 
     private fun loadNextPage() {
+        // OLD WAY
         when(type){
             POPULAR -> {
                 movieViewModel.fetchPopularMovies(currentPage).observe(this, Observer {
@@ -223,6 +295,7 @@ class MovieListActivity : BaseActivity() {
                     }
                 })
             }
+            // NEW WAY
             else -> {
                 lifecycleScope.launch { movieViewModel.fetchMovieListNew(currentPage) }
                 movieViewModel.movieList.observe(this, Observer { response ->
@@ -246,11 +319,28 @@ class MovieListActivity : BaseActivity() {
         paginationAdapter = MovieListPaginationAdapter(this)
         binding.let {
             it.rvMovieList.setHasFixedSize(true)
-            it.rvMovieList.setItemViewCacheSize(100)
+            it.rvMovieList.setItemViewCacheSize(totalItem)
             paginationAdapter.setHasStableIds(true)
             paginationAdapter.onClicked = {id ->
                 startActivity(MovieDetailActivity.getStartIntent(this,id,false))
             }
+            paginationAdapter.onListened = { pos ->
+                indexPos = pos
+                if (indexPos > -1 && paginationAdapter.list.isNotEmpty() && pos < paginationAdapter.list.size-1){
+                    coroutineScope.launch {
+                        value = if (indexPos %2 == 0) (0..100).random() else (1000..1500).random()
+                        intLiveData.postValue(value)
+                        runOnUiThread {
+                            intLiveData.observe(this@MovieListActivity, Observer{ vals ->
+                                paginationAdapter.list[indexPos]?.title = "Random value $vals"
+                            })
+                            paginationAdapter.notifyItemChanged(indexPos)
+                        }
+                        value = 0
+                    }
+                }
+            }
+            it.rvMovieList.itemAnimator = null
             it.rvMovieList.adapter = paginationAdapter
         }
     }
@@ -265,8 +355,11 @@ class MovieListActivity : BaseActivity() {
         Handler().postDelayed({
             paginationAdapter.removeLoadingFooter()
             isLoadingPage = false
+            indexPos = 0
+            value = 0
             response?.results?.let { it1 -> paginationAdapter.addAll(it1) }
-
+            totalItem += response?.results?.size?:0
+            binding.rvMovieList.setItemViewCacheSize(totalItem)
             if (currentPage != TOTAL_PAGES) paginationAdapter.addLoadingFooter()
             else isLastPagePage = true
         },1000)
@@ -274,6 +367,9 @@ class MovieListActivity : BaseActivity() {
 
     private fun successLoadMovieFirst(response : MovieListResponse?){
         TOTAL_PAGES = response?.total_pages?:0
+        totalItem += response?.results?.size?:0
+        indexPos = 0
+        value = 0
         response?.results?.let { it1 -> paginationAdapter.addAll(it1) }
         if (currentPage <= TOTAL_PAGES) paginationAdapter.addLoadingFooter()
         else isLastPagePage = true

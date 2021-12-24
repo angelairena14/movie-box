@@ -25,7 +25,7 @@ data class MovieListDetail(
     @SerializedName("release_date")
     val release_date: String,
     @SerializedName("title")
-    val title: String
+    var title: String
 ){
     override fun equals(other: Any?): Boolean {
         if (javaClass != other?.javaClass) return false
